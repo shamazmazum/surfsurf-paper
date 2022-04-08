@@ -12,7 +12,6 @@ jobs:
         uses: dante-ev/latex-action@latest
         with:
           root_file: surf-surf.tex
-          compiler: xelatex
 #      - name: Run bibtex
 #        uses: dante-ev/latex-action@latest
 #        with:
@@ -23,7 +22,6 @@ jobs:
         uses: dante-ev/latex-action@latest
         with:
           root_file: surf-surf.tex
-          compiler: xelatex
       - name: Upload
         uses: svenstaro/upload-release-action@v2
         with:

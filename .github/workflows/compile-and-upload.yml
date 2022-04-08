@@ -1,6 +1,9 @@
 name: Compile and upload
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   compile_upload:

@@ -204,7 +204,7 @@ The value of $S^{(i)}_2(r)$ at zero is a fraction of phase $i$ in a medium:
 By looking at \cref{eq:twopoint} and \cref{eq:fss}-\cref{eq:fsv} one can observe
 some significant similarities between two-point probability and two-point
 surface functions \cref{fig:scheme}. They will help us in computations. However,
-let’s first consider major differences. Firstly, unlike $S_2$ in
+let's first consider major differences. Firstly, unlike $S_2$ in
 \cref{eq:s2porosity}, $F_{ss})(r)$ is not defined at $r=0$. $S_2$ can be viewed
 as a autocorrelation of the image, i.~e., computing correlations between shifted
 realization of the image -- something that can be used to effectively compute
@@ -220,7 +220,19 @@ the interface and the void phase), plus during computation of such
 $\langle F_{sv}(r) \ne F_{sv}(-r) \rangle$. These considerations will be very
 useful in understanding our computational framework. More detailed information
 on two-point probability and surface correlation functions can be found in
-comprehensive Torquato’s book \cite{Torq_book}.
+comprehensive Torquato's book \cite{Torq_book}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{images/scheme.png}
+  \caption[]{A schematic depiction of a binary porous media (pores are shown in
+    color) with examples of positive events for surface $F_{ss}$, $F_{sv}$ and
+    two-point probability $S_2$ correlation functions. The zoomed in area
+    represents the difference between the true ``continuous'' interface in
+    between pore and solid phases with pixelized ``digital'' interface emerging
+    due to limited resolution of digital images.}
+  \label{fig:scheme}
+\end{figure}
 
 %     FIG.1. A schematic depiction of a binary porous media (pores are shown in color) with
 %examples of positive events for surface FSS, FSV and two-point probability S2 correlation functions.

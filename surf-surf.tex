@@ -1,0 +1,687 @@
+\documentclass[reprint,amsmath,amssymb,aps,pre]{revtex4-1}
+% Latex
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% Xelatex
+%\usepackage{polyglossia}
+%\usepackage{fontspec}
+%\setdefaultlanguage{english}
+%\setmainfont{DejaVu Sans}
+%\setsansfont{DejaVu Sans}
+%\setmonofont{DejaVu Sans Mono}
+\usepackage{bm}
+\usepackage{cleveref}
+\usepackage{xcolor}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{subfigure}
+
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+% When cleveref fails to do its job
+\newcommand{\apref}[1]{Appendix \ref{#1}}
+
+\begin{document}
+%*Corresponding author: Kirill M. Gerke, Tel.: +79661877715, E-mail: kg@ifz.ru,
+%Address: Schmidt Institute of Physics of the Earth of Russian Academy of
+%Sciences, Bolshaya Gruzinskaya str. 10/1, Moscow, 123242, Russia
+\author{Alexey I. Samarin}
+\altaffiliation{Computational Mathematics and Cybernetics, Lomonosov Moscow
+  State University, Moscow, 119991, Russia}
+\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
+  Sciences, Moscow, 123242, Russia}
+\author{Vasily Postnicov}
+\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
+  Sciences, Moscow, 123242, Russia}
+\author{Marina V. Karsanina}
+\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
+  Sciences, Moscow, 123242, Russia}
+\author{Efim V. Lavrukhin}
+\altaffiliation{Computational Mathematics and Cybernetics, Lomonosov Moscow
+  State University, Moscow, 119991, Russia}
+\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
+  Sciences, Moscow, 123242, Russia}
+\author{Kirill M. Gerke}
+\email[E-mail:]{kg@ifz.ru}
+\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
+  Sciences, Moscow, 123242, Russia}
+
+\title{Robust surface correlation functions evaluation from discrete digital
+  images}
+
+\begin{abstract}
+  What have we done?
+\end{abstract}
+
+\maketitle
+
+% Write the content here!
+\section{Background and motivation}
+Correlation functions (CFs) are invaluable universal descriptors of
+structure and in this context are utilized in a multitude of scientific
+disciplines: material sciences \cite{Cecen}, rock physics, soil physics
+\cite{Euras2012;PLoS_ONE;KarsaninaEJSS} and hydrology \cite{Schluter}, cosmology
+\cite{oldJap} and food engineering \cite{Antonio}, to name just a handful. As
+such, CFs were used to characterize the morphology \cite{tensorPRE} and
+representativeness via correlation lengths \cite{Capek,Adler-Thovert}, compare
+structures \cite{recons;REVpaper}, compress structural information
+\cite{SciRep;Havelka}, describe structural dynamics \cite{Jiao_dynamo;PLoS_ONE},
+extract features for deep learning \cite{Tahmasebi;Torq_SciRep;KarsaninaEJSS},
+perform stochastic reconstructions
+\cite{Adler;Y-T1998;EPL;Jiao;TahmasebiPRL;ourPRL} and fuse multi-scale images
+\cite{SciRep;Jiao_multi;Karsanina2018;Tahmasebi2018}. Stochastic reconstruction
+is a special topic of interest, as this approach allows to solve an inverse
+problem and recover structure from a known set of correlation functions – and
+this ability for recovery is the basis for majority of potential usages in the
+list above. Early reconstruction techniques mainly involved two-point
+probability $S_2$ function, but were improved to include lineal $L_2$ function
+\cite{Y-T3D;Capek}, cluster $C_2$ function \cite{JiaoPNAS;JiaoChawla} and
+surface-surface $F_{ss}$ function \cite{JiaoPNAS}. With the proper handling
+\cite{EPL2} it is possible to incorporate numerous CFs into a reconstruction
+procedure. Increasing the number (and order) of functions leads to higher
+information content of the CFs set \cite{Gommes1-2}, thus, it allows to
+reconstruct and perform stationarity/representativeness characterization
+\cite{REV_paper;newPRL} for structures of any complexity.
+
+There are two ways to obtain correlation functions for a given structure at hand
+-- either measure them experimentally with the help of scattering intensity
+\cite{Debye;Jiao_XCT}, or measured from images. The first approach suffers from
+the limitation of CFs that can be obtained this way \cite{Gommes_notchord},
+while the second one provides information with limited resolution or/and
+resolution to field-of-view ratio \cite{SciRep}. Moreover, the most useful imaging
+methods such as X-ray computed tomography (XCT) and scanning electron microscopy
+(SEM) due to their underlying physical principles provide gray-scale images
+which need to be segmented \cite{Schluter_review} into constituent phases before
+CFs computation. It is important to note that such gray-scale images do not
+represent phases spatial distribution, but, for example, X-ray spatial
+attenuation or electron back-scattering intensities. However, if properly
+segmented, high-resolution digital images do provide a possibility to compute
+any correlation function. Experimental measurements using small angle scattering
+(SAS) are traditionally used to evaluate $S_2$, but it is also possible to
+relate scattering intensities to surface correlation functions
+\cite{Ma_Torq+inthere}. It would be of great practical importance to obtain
+surface correlation functions from both SAS and imaging (focused ion beam
+milling combined with SEM allows to obtain the finest imaging resolutions
+comparable to SAS and sample CFs from polished surfaces as opposed to surface
+imaging \cite{FIB-SEM_paper}) to estimate coefficients for surface and bulk
+scattering (see Eq.13 in \cite{Ma_Torq}). But there is a catch -- SAS possesses
+close to infinite surface resolution as opposed to digital pixelized images with
+inherent segmentation problems due partial volume effects, something we discuss
+next.
+
+Recently, Ma and Torquato \cite{Ma_Torq} laid foundation to precise surface
+correlation function computations and showed the usefulness of these CFs
+evaluation for numerous problems. They have implemented an elegant solution with
+the help of infinite resolution random fields that allows finding an exact
+intersection with the sampling line. In addition, they also showed that surface
+CFs for digital images can be computed by converting integer fields (i.e.,
+location of the phases) to float fields with the help of Gaussian filter
+\cite{Ma_Torq}. Unfortunately, their solution is not readily applicable to the
+majority of structure samples due to non-singularity in their chemical
+constitution. The reason is the difference between the contour and real
+interface between different phases within the material due to the partial volume
+effects \cite{Wildenschild_Sheppard} for XCT imaging -- the presence of multiple
+phases within the same pixel/voxel. In other words, the attenuation is a
+function of both density and atomic number, which usually are distributed
+non-uniformly below the XCT imaging resolution. Somewhat similar is also
+relevant for SEM imaging, as secondary or back-scattered electrons are
+effectively a convolution of partial signals coming from different depths
+\cite{Bultreys_review}. The exact sub-voxel thresholding based on gray-scale
+image (similar to the technique used in \cite{Ma_Torq}) is only available in
+case it is monomineral. i.~e., the solid phase consists of a completely
+chemically homogeneous substance that contrasts perfectly with air/vacuum filled
+pore phase -- this is rarely the case for natural materials. All these and
+additional problems (such as, for example, experimental noise and artifacts from
+inverse Radon transform) arising during gray-scale image processing as related
+to image segmentation were extensively discussed elsewhere
+\cite{Safonov;Lavrukhin2021}. In other words, we still lack a robust and
+computationally effective procedure to evaluate surface CFs from general 2D and
+3D images of heterogeneous materials.
+
+In this paper we build upon foundational work of Ma and Torquato \cite{Ma_Torq}
+and develop a robust and efficient approach to compute surface correlation
+functions from digital 2D and 3D images. The rest of the manuscript is organized
+as follows: in \cref{sec:details} we provide all methodological details for
+surface CFs computation including analytical solutions to verify the proposed
+methodology and describe an image library for extensive testing of our
+algorithms. \cref{sec:results} presents all major results of surface functions
+evaluations. We discuss obtained results, including the effects of image
+scaling, and outline future uses of surface functions within
+\cref{sec:scaling}. The paper concludes with a summary in \cref{sec:summary}.
+
+\section{Methodological details}
+\label{sec:details}
+\subsection{Correlation functions and definitions}
+First, we introduce an indicator function $I^{(i)}(x)$, which describes the
+affiliation between local points (pixels for 2D and voxels for 3D digitized
+images) of structure under study. For a two-phase (or binary) system
+(e.g. solid-pore) the indicator function will take the following form in each
+location $x$ in the n-dimensional Euclidean space $\mathbb{R}^n$
+\begin{equation*}
+  I^{(i)}(\mathbf{x}) = \left\{
+  \begin{array}{ll}
+    1 & \quad \mathbf{x} \in V_i \\
+    0 & \quad \text{otherwise}
+  \end{array}
+  \right.
+\end{equation*}
+where $V_i \subset \mathbb{R}^n$ is the region occupied by phase i. For
+statistically homogeneous media the ensemble average of $I^{(i)}$ equals volume
+fraction of a given phase, both of which summarize to unity for binary media:
+\begin{align*}
+  \phi_i &= \langle I^{(i)}(x) \rangle \\
+  \phi_1 + \phi_2 &= 1
+\end{align*}
+In a similar fashion we can define an interface indicator function can be
+defined that provides interface area $s$ if averaged over the whole image:
+\begin{align}
+  M(x) &= |\nabla I^{(1)}(x)| =|\nabla I^{(2)}(x)| \label{eq:interface} \\
+  \langle M(x) \rangle &= s
+\end{align}
+The simplest, yet foundational correlation function is two-point probability
+$S_2$ function that is defined as a probability to sample the ends of a line
+segment within the same phase:
+\begin{equation}
+  S_2^{(i)}(x_1, x_2) = \langle I^{(i)}(x_1) I^{(i)}(x_2) \rangle \label{eq:twopoint}
+\end{equation}
+This equation can be further simplified for statistically homogeneous media, as
+$S_2$ will dependent only on the relative displacement $r$:
+\begin{equation*}
+  S_2^{(i)}(x_1, x_2) = S_2^{(i)}(r)
+\end{equation*}
+Now, analogously to $S_2$ we can define surface-surface and surface-void
+correlation functions:
+\begin{align}
+  F_{ss}(r) &= \langle M(x)M(x+r) \rangle \label{eq:fss} \\
+  F_{sv}(r) &= \langle M(x)I^{(void)}M(x+r) \label{eq:fsv} \rangle
+\end{align}
+The value of $S^{(i)}_2(r)$ at zero is a fraction of phase $i$ in a medium:
+\begin{equation}
+  S_2^{(i)}(0) = \phi_i \label{eq:s2porosity}
+\end{equation}
+
+By looking at \cref{eq:twopoint} and \cref{eq:fss}-\cref{eq:fsv} one can observe
+some significant similarities between two-point probability and two-point
+surface functions \cref{fig:scheme}. They will help us in computations. However,
+let’s first consider major differences. Firstly, unlike $S_2$ in
+\cref{eq:s2porosity}, $F_{ss})(r)$ is not defined at $r=0$. $S_2$ can be viewed
+as a autocorrelation of the image, i.~e., computing correlations between shifted
+realization of the image -- something that can be used to effectively compute
+$S_2$ with the help of fast Fourier transform (FFT) on modern hardware,
+especially GPUs. If we apply the same analogy to \cref{eq:fss}, can be
+considered as an intersection of the interface with itself for all possible
+shifts. But for the correlation length zero this intersection is technically
+infinity. While surface function is well defined at $r=0$, it differs from $S_2$
+in two significant aspects -- it resembles more two-point cross-correlation
+function (as instead of autocorrelation we have to compute correlation between
+the interface and the void phase), plus during computation of such
+``cross-correlations'' one has to keep in mind that
+$\langle F_{sv}(r) \ne F_{sv}(-r) \rangle$. These considerations will be very
+useful in understanding our computational framework. More detailed information
+on two-point probability and surface correlation functions can be found in
+comprehensive Torquato’s book \cite{Torq_book}.
+
+%     FIG.1. A schematic depiction of a binary porous media (pores are shown in color) with
+%examples of positive events for surface FSS, FSV and two-point probability S2 correlation functions.
+%The zoomed in area represents the difference between the true “continuous” interface in between
+%pore and solid phases with pixelized “digital” interface emerging due to limited resolution of digital
+%images.
+
+\subsection{Computation of correlation functions}
+One can potentially apply a number of different computational approaches to
+evaluate surface functions. We start by exploring the most computationally
+straightforward algorithms and move towards more complex ones. The surface area
+in \cref{eq:interface} has infinitesimal volume on digital images. This prevents
+the usage of two methods to compute (cross-) correlations: scanning with line
+segment and autocorrelation with FFT that are immediately applicable to digital
+pixelized/voxelized images. The usage of interfaces between voxels ``as is''
+leads to severe errors in s and surface geometry, as known from application of
+3D imaging for geometry and topology analysis \cite{AWR_PNM} or energy
+minimization problems \cite{jagged_surfaces}. Another option would be to
+describe the boundaries between voxels with some curves, e.~g., splines. This
+way it would be possible to perform surface CFs sampling by line intersection as
+described by Ma and Torquato \cite{Ma_Torq}. While an exact boundary can be
+obtained for deterministic structures such as circle/sphere packings, splines
+would provide only a very approximate solution for the boundaries of arbitrary
+digitized structure due to the limit in resolution for a given image
+\cite{Eusosoil2012}. In other words, contours extracted from digital images will
+approach real boundaries between phases only when the spatial resolution
+approaches infinity. But the same is also true for digital pixelized/voxelized
+images. Thus, the options to compute surface correlation functions include
+``continuous'' approach (such as implemented in \cite{Ma_Torq}) and ``digital''
+approach (similar to computation of $S_2$ from digital images) as depicted in
+\cref{fig:scheme}.
+
+We adopt the ``digital'' approach, as it is clear that in the limit of infinite
+resolution the ``continuous'' approach will not provide any advantages for
+arbitrary XCT or SEM images.
+
+%Во всем пейпере надо привести все A, M, Image и т.п. к единообразию тернимологии- а то
+%кто в лес, кто по дрова…
+
+\textit{Method 1}. The interface between binary phases is represented by a one
+pixel thick contour (in two-dimensional case) or one voxel thick surface (in
+three-dimensional case). This contour or surface is extracted from either solid
+or void phase with the help of distance map transform with subsequent filtering
+out of pixels/voxels with distances greater than $1$. Next, surface correlation
+functions are computed as $S_2$ for the extracted interface using full
+autocorrelation to obtain a correlation map or by scanning in predefined
+directions. Such an extraction of the interface can be considered as a kind of
+digitalization of the method based on dilation of spheres by Seaton and Glandt
+\cite{SG1986}.
+
+\textit{Method 2}. This approach computes correlation functions by scanning
+along selected directions and extracting the slices from the array containing
+the binary structure. The major difference from the previous method is how we
+extract the boundary between phases from the digital image. Given a multiphase
+image $A$ we reduce it to a two-phase image $A'$ by applying the indicator
+function $I$ to select the phase of interest: $A' = I(A)$. We use Sobel operator
+to detect edges of the image $A'$, later denoted as $\nabla A$:
+$\nabla A' = S(A')$. We calculate $\|\nabla A'\|$ element-wise ($\|\cdot\|$
+denotes the usual norm on Euclidean space). This norm can be interpreted as the
+probability that a point in $A$ belongs to the interface. In a digitized image
+$\|\nabla A'\|$ can be represented as an array of floating point numbers having
+the same shape as an original image $A$. The next step is to cut one-dimensional
+slices from the array $\|\nabla A' \|$ in multiple predefined directions. In our
+code, the directions include two orthogonal and two diagonal directions for 2D
+images, and three orthogonal and ten diagonal directions in 3D. For each slice
+$a_{ij}$ ($i$ being the number of a slice and $j$ being the number of an element
+in that slice) we compute two sequences:
+\begin{align}
+  S^{(ss)}_{ik} &= (a_i \star a_i)_k \label{eq:fss-success} \\
+  N_{ik} &= \text{\# of subslices with the length $k+1$ in the slice $i$} \label{eq:divisor}
+\end{align}
+where $\star$ denotes a discrete cross-corellation of two sequences with the
+length $N$:
+\begin{equation*}
+  (a\star b)_i = \sum_{j=0}^N a_j b_{i+j \mod N}
+\end{equation*}
+The surface-surface correlation function for the correlation length k can be
+computed using the formula:
+\begin{equation*}
+  F_{ss}(k) = \frac{\sum_i S^{(ss)}_{ik}}{\sum_i N_{ik}} \qquad k \ge 0
+\end{equation*}
+
+The surface-void correlation function $F_{sv}$ can be computed in a similar
+way. At first, calculate $\|\nabla A'\|$ in the same way as for $F_{ss}$. Then
+cut slices $a_{ij}$ from the array $\|\nabla A'\|$  and $b_{ij}$ from the same
+positions from the array $B = I^{(void)}(A)$. The equation \cref{eq:fss-success}
+becomes
+\begin{equation}
+  S^{(sv)}_{ik} = (a_i \star b_i)_k \label{eq:fsv-success}
+\end{equation}
+$F_{sv}(k)$ can be computed using \cref{eq:fsv-success} and \cref{eq:divisor} in
+the following way:
+\begin{equation*}
+  F_{sv}(k) = \frac{\sum_i S^{(sv)}_{ik}}{\sum_i N_{ik}} \qquad k \ge 0
+\end{equation*}
+
+In practice we use the discrete Fourier transform to calculate a
+cross-correlation $a \star b$ as $F^{-1} [F(a) \cdot \overline{F(b)}]$.
+
+Here follow step-by-step algorithms to compute surface-surface and surface-void
+correlation functions:
+\begin{algorithmic}[1]
+  \Procedure{surfsurf}{$a, phase, direction$}
+  \Comment{input image $a$, phase $phase$, direction vector $direction$}
+  \State $S \gets [0,0..]$
+  \State $N \gets [0,0..]$
+  \State $a' \gets I^{(phase)}(a)$
+  \Comment{Apply indicator function element-wise.}
+  \State $ind = \|S(a')\|$
+  \Comment{Interface detection with Sobel filter.}
+  \For{$slice \in \{ \text{Slices from } ind \parallel direction\}$}
+  \State $S \gets S + F^{-1}[F(slice) \cdot \overline{F(slice)}]$
+  \Comment Element-wise addition
+  \State $N \gets N + N'_k$ \quad where $N'_k$ is a list with number of subslices of length $k+1$ in $slice$.
+  \EndFor
+  \State $F_{ss} \gets S/N$
+  \Comment Element-wise division.
+  \State \textbf{return} $F_{ss}$.
+  \EndProcedure
+\end{algorithmic}
+
+\begin{algorithmic}[1]
+  \Procedure{surfvoid}{$a, phase, direction$}
+  \Comment{input image $a$, phase $phase$, direction vector $direction$}
+  \State $S \gets [0,0..]$
+  \State $N \gets [0,0..]$
+  \State $a' \gets I^{(phase)}(a)$
+  \Comment{Apply indicator function element-wise.}
+  \State $void \gets I^{(void)}(a)$
+  \State $ind = \|S(a')\|$
+  \Comment{Interface detection with Sobel filter.}
+  \For{$s_1 \in \{ \text{Slices from } ind\} \quad \text{and} \quad s_2 \in \{\text{Slices from } void\}, s_1 \parallel s_2 \parallel direction$}
+  \State $S \gets S + F^{-1}[F(s_1) \cdot \overline{F(s_2)}]$
+  \Comment Element-wise addition
+  \State $N \gets N + N'_k$ \quad where $N'_k$ is a list with number of
+  subslices of length $k+1$ in $s_1$ or $s_2$.
+  \EndFor
+  \State $F_{sv} \gets S/N$
+  \Comment Element-wise division.
+  \State \textbf{return} $F_{sv}$.
+  \EndProcedure
+\end{algorithmic}
+
+\textit{Method 3}.
+
+%accurate approximation of the interface. For simplicity, all methodological details are provided as
+%related to 2D images; extension to 3D is straightforward and is provided within our code example in
+%Supplementary Materials. In order to calculate (, ) = |∇(, )|, we first estimate the
+%gradient (, ) using the Sobel filter kernel. As a result, we obtain two matrices containing
+%gradients in the direction of the first and second dimension  `,  `. Then,
+%
+%                                                                                                       
+%(, ) =  `2(, ) +  `2(, ).
+%
+%
+%Calculation of void indicator function is even simpler:
+% (, ) = 1 − (, ).
+%
+% 
+%Cross correlation function  () = 〈(1)()(2)( + )〉 = < () ( + ) > can be
+%
+%                                                      
+%easily computed using fast Fourier transform [link to paper]. First, we calculate Fourier transform
+%of  and :  = (),  = (). Then we take the complex conjugate of each element of
+%the matrix F and multiply it by the corresponding element of the matrix G:  = * * . Taking the
+%inverse Fourier transform from the resulting matrix, we get an unnormalized cross-correlation
+%matrix () = (). Let () denote the number of all possible points within the image, the
+%distance between which is equal to r, then by dividing the matrices () and ()elementwise, we
+%obtain the cross-correlation matrix.
+%
+%     In case the boundary conditions are periodic, () does not depend on r and is equal to the
+%number of pixels on the image. For non-periodic boundary conditions, () is equal to the number
+%of pixels whose coordinates are greater than . Since the FFT assumes periodic boundary conditions
+%by default, it is required to additionally prepare the image when the boundaries are non-periodic. To
+%do this, the image is doubled in each dimension, filling new pixels with zeros. After that, the
+%algorithm is applied without any changes until the matrix  is obtained, from which, as an
+%additional step, the matrix of the size of the original image is cut out.
+%
+%     Taking the function (, ) instead of , , we get  (), and if we take (, ) instead of 
+%
+%                                                                                                    
+%
+%and ()(, ) instead of , we obtain  (). More precisely, we have counted functions only for
+%
+%                                                                        
+%
+%non-negative r. To calculate functions when some of the components of r are negative, it is enough
+%to reverse the image in the corresponding dimensions and perform all the original steps of the
+%algorithm.
+%
+%     Sometimes one only needs to calculate a function in a given direction. In this case, after
+%obtaining  and (), it is necessary to cut 1D slices along the required direction, calculate the
+%one-dimensional cross-correlation, add the results obtained and divide by .
+%
+%     В методы Леши надо бы упомянуть конверсию мультифазки в двух как описано у Васи?
+%А то как то странно смотрится все это…
+%
+
+All methods and their consecutive stages are shown in \cref{fig:stages}. They
+are also a part of \code{CorrelationFunctions.jl} package \cite{ourpapaer} for
+Julia programming language that allows to compute all classical CFs described in
+Torquato’s book \cite{Torq_book} from digital images.
+
+\subsection{Analytical solutions for surface CFs}
+For Poisson disks and spheres as shown in the previous subsection one can derive
+exact analytical surface-surface and surface-void functions. For overlapping
+disks and spheres with radius $R$ and centers generated by Poisson point process
+with parameter $λ$ surface-surface function $F_{ss}(r)$ and surface-void
+function $F_{sv}(r)$ we have (see the derivation of these formulas in Appendix
+A):
+\begin{align}
+  F_{sv}(r) &= \left\{
+  \begin{array}{ll}
+    2(\pi - B)R \lambda S_2(r) & \quad r<2R \\
+    2\pi R \lambda S_2(r) & \quad \text{otherwise}
+  \end{array} \right. \label{eq:fsv_final} \\
+  F_{ss}(r) &= \left\{
+  \begin{array}{ll}
+    \frac{(2(B-\pi)R\lambda)^2Ar + 4\sqrt{A}R^2\lambda}{Ar}S_2(r) & \quad \text{otherwise}
+  \end{array} \right. \label{eq:fss_final}
+\end{align}
+
+where $S_2$ is the regular two-point correlation function and
+\begin{align*}
+  A &= 4R^2 - r^2 \\
+  B &= \arccos(\frac{r}{2R})
+\end{align*}
+
+For 3D spheres the relationships are simpler and readily available in the
+literature \cite{Torq_book}\cite{Ma_Torq}:
+\begin{align*}
+  F_{sv}(r) &= \left\{
+  \begin{array}{ll}
+    4\pi R^2\lambda(\frac{1}{2} + \frac{r}{4R})S_2(r) & \quad r<2R \\
+    4\pi R^2\lambda S_2(r) & \quad \text{otherwise}
+  \end{array} \right. \\
+  F_{ss}(r) &= \left\{
+  \begin{array}{ll}
+    {(4\pi R^2 \lambda (\frac{1}{2} + \frac{r}{4R}))^2 + \frac{2\pi R^2 \lambda}{r}} & \quad r<2R \\
+    (4\pi R^2 \lambda)^2 S_2(r) & \quad \text{otherwise}
+  \end{array} \right.
+\end{align*}
+
+These analytical solutions are used to verify the accuracy of computations for
+Poisson disks/spheres.
+
+\section{Application to synthetic and real binary 2D/3D images}
+\label{sec:results}
+\subsection{Comparisons against analytical solutions}
+To evaluate the accuracy of surface CFs computations the most straightforward
+way is to compare them against analytical solutions. We begin by considering a
+single circle, and then the realization of the Poisson point process and draw
+spheres of radius $R$ with centers at those locations. Starting with an image
+with resolution of 4096x4096 pixels, we then downscale it in 4, 16, and 64 times
+with the help of bicubic interpolation \cite{mexicans}. It is easy to show that
+assuming $a > 0$:
+\begin{align*}
+  F_{ss}(a \mathbb{x}, a(\mathbb{x} + \mathbb{r})) &= a^2 F_{ss}(\mathbb{x},
+  \mathbb{x} + \mathbb{r}) \\
+  F_{sv}(a \mathbb{x}, a(\mathbb{x} + \mathbb{r})) &= a F_{sv}(\mathbb{x},
+  \mathbb{x} + \mathbb{r})
+\end{align*}
+
+Assuming that our images represent homogeneous and isotropic media, we calculate
+$F_{ss}(r)$ and $F_{sv}(r)$ for each original or rescaled image and multiply it
+by coefficient $a^2 = (L_{scaled}/L_{orig})^2$ and $a = L_{scaled}/L{orig}$
+respectively, where $L_{scaled}$ is the side of the rescaled image and
+$L_{orig}$ is the side of the original image. The resulting scaled surface CFs
+as computed using the Method 2 are shown in \cref{fig:scaling}. Note that
+Method 2 and Method 3 produce the same results if computed along the same
+direction. We can observe two effects when downscaling the original image. The
+first effect is that $F_{ss}(r)$ and $F_{sv}(r)$ for downscaled images lack in
+details (i.e., they are less ``noisy''). This can be easily explained by that the
+interface between phases that becomes ``simpler'' when resolution decreases. The
+second and much more important effect is that both correlation functions become
+largely underestimated with the decline in resolution. This latter effect is in
+general connected to the fact that the interface in digital images has
+non-negligible thickness -- i.~e. the difference between real ``continuous''
+interface versus ``digital'' interface \cref{fig:scheme}. It is logical to
+assume that with increasing spatial resolution the influence of this thickness
+will diminish. This is exactly what we observe on \cref{fig:scaling} where
+increasing disk discretization leads to convergence with analytical solution;
+the accuracy of the computed CFs is almost perfect for discretization of XX
+pixels for each disk. A natural question arises: ``Is there a criterion of image
+quality (resolution) that allows to predict the quality of surface CFs
+evaluation from digital images?''. Turns out there is a possibility to establish
+such empirical criterion based on spectral analysis of input images and
+\cref{sec:wtf} provides necessary details.
+
+Now consider a situation when an image is obtained by taking samples of a function
+$f: \mathbf{R}^n \rightarrow \left\{0, 1\right\}$. The samples are taken at a regular grid
+which covers the range $[0, 1]^n$  with interval $\Delta$ between samples. The
+resulting image has then $1/\Delta + 1$ pixels in each dimension. An example of
+$f$ is a thresholded value noise function, and an example of image generated by
+sampling this function is on \cref{fig:noise}.
+
+If we calculate surface-surface and surface-void correlation functions for these
+images and scale them as described above, we will converge to some ``true''
+correlation functions for continuous function $f$.
+
+\subsection{The choice of filter’s kernel to extract the interface (gradient)}
+There are many different kernels to evaluate gradients, but the Sobel kernel
+performed slightly better \cref{fig:wtf2} compared to majority of other kernels
+we have explored: Ando, Scharr, Bickley, and Prewitt filters. Only the Ando’s
+filter with size of 5x5 \cite{ando_2000} outperformed the Sobel filter in terms
+of error minimization for 2D circles surface CFs computation. Nonetheless, we
+chose Sobel filter due to its simplicity, faster computations and robust
+implementation of the 3D kernel in all major libraries (where Ando is only a 2D
+filter). Gauss filter is not improving \cref{fig:wtf3}.
+
+\subsection{Criteria for accurate evaluation of surface CFs from discrete images}
+Let us define one-dimensional forward ($F$) and inverse ($F^{-1}$) Fourier
+transforms as:
+\begin{align}
+  \hat{f}(z) &= F[f](z) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} f(x)
+  e^{-i\pi xz} dx \label{eq:fourier-forward} \\
+  f(x) &= F^{-1}[\hat{f}](z) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \hat{f}(z)
+  e^{i\pi xz} dz \label{eq:fourier-backward}
+\end{align}
+
+Here $f(x)$ and $\hat{f}(z)$ can be thought of as representations of a signal in
+the time domain and the frequency domain, respectively. Both equations
+\cref{eq:fourier-forward} and \cref{eq:fourier-backward} preserve norm on $L_2$:
+$(f, f) = (\hat{f}, \hat{f})$. It is said that Fourier transform preserves
+``energy'' of the signal. According to Riemann-Lebesgue lemma \cite{bookHilb}
+energy of any signal ``concentrates'' around low frequencies. A measure of how
+much energy concentrated in low frequencies (for some definition of low
+frequencies) is a key to the understanding of the problem of correctness of our
+method. The Shannon sampling theorem \cite{bookHilb} states that it is possible
+to reconstruct a band-limited signal $f(x)$ whose frequencies lie in the range
+$[0, f]$ from a sequence of samples $\left\{f\right\}$ if the sampling rate is
+no less than $2f$. We introduce a parameter $C_a$:
+\begin{align*}
+  f_0(x) &= f(x) - \langle f(x) \rangle \\
+  C_a &= \frac{\int_{-a\omega}^{a\omega} |\hat{f_0}(z)|^2 dz}{\int_{-\omega}^{\omega} |\hat{f_0}(z)|^2 dz}
+\end{align*}
+where $\omega = 2\pi f$ and $\langle f(x) \rangle$ is the mean value of $f(x)$
+over its domain. The criterion for correctness is then:
+\begin{equation*}
+  C_a > 1 - \xi
+\end{equation*}
+for some $a$ and $\xi$. This criterion tells us exactly how much energy in
+$f_0(x)$ is concentrated in a low frequency range $[0, af]$ compared to the
+whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.05$ that are
+a strict criterion that is based on results of section XXX. For the images of
+Poisson circles from FIG.X1 their discretizations and $C_{0.5}$ are shown in
+FIG.Y1. We immediately observe that the top left image (with resolution
+4096x4096 and surface CFs very close to analytical solution) satisfies our
+$C_{0.5}$ criterion perfectly. The top right image fails to satisfy the
+criterion, but only to some small degree ($0.929 \approx 0.95$). The other two
+downscaled images completely fail to satisfy the criterion. As we can see in
+conjunction from FIG.X1 and FIG.Y1, the criterion correctly selects images which
+are suitable for calculation of the correlation functions using Method2 and
+Method3. The criterion $C_{0.5}$ decays fast with the decline in image
+resolution as shown in FIG.Y2.
+
+\subsection{Application to binary images of porous media}
+After the verification of our computational approach based on analytical
+solution and establishing the criterion $C_{0.5}$ we now have enough tools to
+evaluate to compute surface CFs for different porous media images, including
+real XCT and SEM images.
+
+\section{Discussion and outline}
+Exact vs. for-reconstruction computation of surface CFs
+
+Our way it is easy to implement higher-order statistics computations, such as
+multiple-point surface-surface correlation functions.
+
+Discuss super-resolution to improve accuracy of surface functions computation
+Explain that ``digital'' is better than ``continuous''.
+
+\section{Conclusion}
+Our summary says
+
+\section{Acknowledgments}
+This research was supported by the Russian Science Foundation grant
+17-17-01310.
+
+Collaborative effort of the authors within the FaT iMP (Flow and Transport in
+Media with Pores) research group (www.porenetwork.com) and used some of its
+software. We sincerely thank Prof. Salvatore Torquato for directing us to a
+derivation of analytical formulas for 2D Poisson disks.
+
+\appendix
+\section{Derivation of analytical solutions for 2D Poisson disks}
+\label{ap:overlapping-disks}
+Analytic representation of surface-surface and surface-void correlation
+functions for overlapping balls with centers generated by Poisson point process
+is well known \cite{Torq_book}:
+\begin{align}
+  F_{sv}(r) &= -\lim_{a_1 \rightarrow R} \frac{\partial}{\partial a_1}
+  e^{-\lambda S_{tot}(r, a_1, R)} \label{eq:fsv-disks} \\
+  F_{ss}(r) &= -\lim_{a_1, a_2 \rightarrow R} \frac{\partial}{\partial a_1}
+  \frac{\partial}{\partial a_2} e^{-\lambda S_{tot}(r, a_1,
+    a_2)} \label{eq:fss-disks} \\
+\end{align}
+Here $S_{tot}(r, a_1, a_2)$ refers to a common volume of two n-dimensional balls
+of radii $a_1$ and $a_2$ with a distance $r$ between their centers and $\lambda$
+is a parameter of Poisson process. For two-dimensional disks we have the
+following expression for $S_{tot}(r, a1, a2)$:
+\begin{equation}
+  S_{tot}(r, a_1, a_2) = \pi a_1^2 + \pi a_2^2 - S_{int}(r, a_1, a_2) \label{eq:total}
+\end{equation}
+where $S_{int}(r, a_1, a_2)$ is a common area of two disks, being equal to:
+\cite{Math_stack_link}
+\begin{align}
+  S_{int}(r, a_1, a_2) =&  a_1^2 \arccos(\frac{r^2+a_1^2-a_2^2}{2a_1r}) + \\
+  & a_2^2 \arccos(\frac{r^2+a_2^2-a_1^2}{2a_2r}) - \\
+  & \frac{\sqrt{Y}}{2} \label{eq:intersection}
+\end{align}
+when $r<2R$ and zero otherwise. $Y$ in \cref{eq:intersection} is
+\begin{equation*}
+  Y = (-r+a_1+a_2)(r+a_2-a_1)(r+a_1-a_2)(r+a_1+a_2)
+\end{equation*}
+Substituting \cref{eq:intersection} into \cref{eq:total} and then
+\cref{eq:total} into \cref{eq:fss-disks} we obtain the expression
+\cref{eq:fss_final} for $F_{ss}(r)$.
+
+Similarly substituting \cref{eq:intersection} into \cref{eq:total} and then
+\cref{eq:total} into \cref{eq:fsv-disks} we obtain the expression
+\cref{eq:fsv_final} for $F_{sv}(r)$.
+
+\appendix
+\section{Implementation of surface function computations}
+The code used to compute surface correlation functions in this manuscript was
+written in Julia language and available as a Jupyter notebook in Supplementary
+Materials. It uses \code{CorrelationFunctions.jl} package developed by our group
+\cite{CorrFunc.jl_paper} that allows efficient computation of surface and other
+correlation functions using both CPU and GPU architectures.
+
+\appendix
+\section{Surface-surface correlation function for one disk}
+The analytical representation of the surface-surface correlation function for
+one disk is as follows:
+\begin{equation*}
+  F_{ss}(r) = \lim_{a_1, a_2 \rightarrow R} \frac{\partial}{\partial a_1}
+  \frac{\partial}{\partial a_2} S_{tot}(r, a_1, a_2)
+\end{equation*}
+Following the same steps as in \cref{ap:overlapping-disks} we get a simple
+formula:
+\begin{equation*}
+  F_{ss}(r,R) = \left\{
+  \begin{array}{ll}
+    \frac{4R^2}{r\sqrt{4R^2-r^2}} & \quad r < 2R \\
+    0 & \quad \text{otherwise}
+  \end{array} \right.
+\end{equation*}
+The resulting expression depends only on $t = r / 2R$:
+\begin{equation*}
+  F_{ss}(t) = \left\{
+  \begin{array}{ll}
+    \frac{1}{t\sqrt{1-t^2}} & \quad t < 1 \\
+    0 & \quad \text{otherwise}
+  \end{array} \right.
+\end{equation*}
+You can see that as $t$ tends to $0$ on the right or $1$ on the left,
+$F_{ss}(t)$ tends to infinity.
+
+\onecolumngrid
+\bibliography{habib}
+\bibliographystyle{plain}
+\twocolumngrid
+
+\end{document}

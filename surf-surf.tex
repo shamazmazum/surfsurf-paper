@@ -612,16 +612,47 @@ for some $a$ and $\xi$. This criterion tells us exactly how much energy in
 $f_0(x)$ is concentrated in a low frequency range $[0, af]$ compared to the
 whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.05$ that are
 a strict criterion that is based on results of section XXX. For the images of
-Poisson circles from FIG.X1 their discretizations and $C_{0.5}$ are shown in
-FIG.Y1. We immediately observe that the top left image (with resolution
-4096x4096 and surface CFs very close to analytical solution) satisfies our
-$C_{0.5}$ criterion perfectly. The top right image fails to satisfy the
-criterion, but only to some small degree ($0.929 \approx 0.95$). The other two
-downscaled images completely fail to satisfy the criterion. As we can see in
-conjunction from FIG.X1 and FIG.Y1, the criterion correctly selects images which
-are suitable for calculation of the correlation functions using Method2 and
-Method3. The criterion $C_{0.5}$ decays fast with the decline in image
-resolution as shown in FIG.Y2.
+Poisson circles from \cref{fig:scaling} their discretizations and $C_{0.5}$ are
+shown in \cref{fig:disks-res}. We immediately observe that the top left image
+(with resolution 4096x4096 and surface CFs very close to analytical solution)
+satisfies our $C_{0.5}$ criterion perfectly. The top right image fails to
+satisfy the criterion, but only to some small degree ($0.9185 \approx 0.95$).
+The other two downscaled images completely fail to satisfy the criterion. As we
+can see in conjunction from \cref{fig:scaling} and \cref{fig:disks-res}, the
+criterion correctly selects images which are suitable for calculation of the
+correlation functions using Method2 and Method3. The criterion $C_{0.5}$ decays
+fast with the decline in image resolution as shown in \cref{fig:crit-plot}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{images/plot-criterion.png}
+  \caption[]{The decay of criterion $C_{0.5}$ as a function of the size $s$ of
+    the downscaled image.}
+  \label{fig:crit-plot}
+\end{figure}
+
+\begin{figure*}[t]
+  \centering
+  \subfigure[Resolution 4096x4096, disk radius 61.44 pixels, $C_{0.5} = 0.9593$]{
+    \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-4096.png}
+    \label{fig:disks-4096}}
+  \hfill
+  \subfigure[Resolution 1024x1024, disk radius 15.36 pixels, $C_{0.5} = 0.9185$]{
+    \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-1024.png}
+    \label{fig:disks-1024}}
+  \vskip\baselineskip
+  \subfigure[Resolution 256x256, disk radius 3.84 pixels, $C_{0.5} = 0.8356$]{
+    \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-256.png}
+    \label{fig:disks-256}}
+  \hfill
+  \subfigure[Resolution 64x64, disk radius 0.96 pixels, $C_{0.5} = 0.6549$]{
+    \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-64.png}
+    \label{fig:disks-64}}
+  \caption[]{The influence of imaging resolution on the quality of surface
+    correlation functions computations (as shown in \cref{fig:scaling}) based on
+    the criterion $C_{0.5}$.}
+  \label{fig:disks-res}
+\end{figure*}
 
 \subsection{Application to binary images of porous media}
 After the verification of our computational approach based on analytical

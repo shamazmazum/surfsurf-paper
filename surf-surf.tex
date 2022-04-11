@@ -166,21 +166,21 @@ location $x$ in the n-dimensional Euclidean space $\mathbb{R}^n$
   \end{array}
   \right.
 \end{equation*}
-where $V_i \subset \mathbb{R}^n$ is the region occupied by phase i. For
+where $V_i \subset \mathbb{R}^n$ is the region occupied by phase $i$. For
 statistically homogeneous media the ensemble average of $I^{(i)}$ equals volume
-fraction of a given phase, both of which summarize to unity for binary media:
+fraction of a given phase. For binary media the following equality holds:
 \begin{align*}
-  \phi_i &= \langle I^{(i)}(x) \rangle \\
-  \phi_1 + \phi_2 &= 1
+  \phi_{void} &+ \phi_{solid} = 1 \\
+  \phi_i &= \langle I^{(i)}(x) \rangle
 \end{align*}
-In a similar fashion we can define an interface indicator function can be
-defined that provides interface area $s$ if averaged over the whole image:
+In a similar fashion we can define an interface indicator function $M(x)$ which
+provides interface area $s$ if averaged over the whole image:
 \begin{align}
-  M(x) &= |\nabla I^{(1)}(x)| =|\nabla I^{(2)}(x)| \label{eq:interface} \\
+  M(x) &= |\nabla I^{(solid)}(x)| =|\nabla I^{(void)}(x)| \label{eq:interface} \\
   \langle M(x) \rangle &= s
 \end{align}
 The simplest, yet foundational correlation function is two-point probability
-$S_2$ function that is defined as a probability to sample the ends of a line
+function $S_2$ which is defined as a probability to sample the ends of a line
 segment within the same phase:
 \begin{equation}
   S_2^{(i)}(x_1, x_2) = \langle I^{(i)}(x_1) I^{(i)}(x_2) \rangle \label{eq:twopoint}
@@ -194,7 +194,7 @@ Now, analogously to $S_2$ we can define surface-surface and surface-void
 correlation functions:
 \begin{align}
   F_{ss}(r) &= \langle M(x)M(x+r) \rangle \label{eq:fss} \\
-  F_{sv}(r) &= \langle M(x)I^{(void)}M(x+r) \label{eq:fsv} \rangle
+  F_{sv}(r) &= \langle M(x)I^{(void)}(x+r) \label{eq:fsv} \rangle
 \end{align}
 The value of $S^{(i)}_2(r)$ at zero is a fraction of phase $i$ in a medium:
 \begin{equation}
@@ -203,20 +203,20 @@ The value of $S^{(i)}_2(r)$ at zero is a fraction of phase $i$ in a medium:
 
 By looking at \cref{eq:twopoint} and \cref{eq:fss}-\cref{eq:fsv} one can observe
 some significant similarities between two-point probability and two-point
-surface functions \cref{fig:scheme}. They will help us in computations. However,
-let's first consider major differences. Firstly, unlike $S_2$ in
-\cref{eq:s2porosity}, $F_{ss})(r)$ is not defined at $r=0$. $S_2$ can be viewed
-as a autocorrelation of the image, i.~e., computing correlations between shifted
-realization of the image -- something that can be used to effectively compute
-$S_2$ with the help of fast Fourier transform (FFT) on modern hardware,
-especially GPUs. If we apply the same analogy to \cref{eq:fss}, can be
-considered as an intersection of the interface with itself for all possible
-shifts. But for the correlation length zero this intersection is technically
-infinity. While surface function is well defined at $r=0$, it differs from $S_2$
-in two significant aspects -- it resembles more two-point cross-correlation
-function (as instead of autocorrelation we have to compute correlation between
-the interface and the void phase), plus during computation of such
-``cross-correlations'' one has to keep in mind that
+surface functions (see \cref{fig:scheme}). They will help us in
+computations. However, let's first consider major differences. Firstly, unlike
+$S_2$ in \cref{eq:s2porosity}, $F_{ss}(r)$ is not defined at $r=0$. $S_2$ can
+be viewed as a autocorrelation of the image, i.~e., computing correlations
+between shifted realization of the image -- something that can be used to
+effectively compute $S_2$ with the help of fast Fourier transform (FFT) on
+modern hardware, especially GPUs. If we apply the same analogy \cref{eq:fss}
+can be considered as an intersection of the interface with itself for all
+possible shifts. But for the correlation length zero this intersection is
+technically infinity. While surface function is well defined at $r=0$, it
+differs from $S_2$ in two significant aspects -- it mostly resembles two-point
+cross-correlation function (as instead of autocorrelation we have to compute
+correlation between the interface and the void phase), plus during computation
+of such ``cross-correlations'' one has to keep in mind that
 $\langle F_{sv}(r) \ne F_{sv}(-r) \rangle$. These considerations will be very
 useful in understanding our computational framework. More detailed information
 on two-point probability and surface correlation functions can be found in

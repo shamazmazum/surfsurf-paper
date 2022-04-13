@@ -26,7 +26,7 @@
 %*Corresponding author: Kirill M. Gerke, Tel.: +79661877715, E-mail: kg@ifz.ru,
 %Address: Schmidt Institute of Physics of the Earth of Russian Academy of
 %Sciences, Bolshaya Gruzinskaya str. 10/1, Moscow, 123242, Russia
-\author{Alexey I. Samarin}
+\author{Aleksei I. Samarin}
 \altaffiliation{Computational Mathematics and Cybernetics, Lomonosov Moscow
   State University, Moscow, 119991, Russia}
 \affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
@@ -268,6 +268,72 @@ arbitrary XCT or SEM images.
 %Во всем пейпере надо привести все A, M, Image и т.п. к единообразию тернимологии- а то
 %кто в лес, кто по дрова…
 
+\textbf{High-level algorithm}
+
+Fss algorithm:
+\begin{enumerate}
+    \item reduce multi-phase image $A$ to two-phase image by applying indicator function $A'= I(A)$.
+    \item extract interface from binary image $A'$ as image of the same size $M = S(A')$
+    \item compute auto correlation function of interface $Fss = S_2(M)$
+\end{enumerate}
+
+Fss algorithm:
+\begin{enumerate}
+    \item reduce multi-phase image $A$ to two-phase image by applying indicator function $A'= I(A)$.
+    \item extract interface from binary image $A'$ as image of the same size: $M = S(A')$
+    \item extract void phase from multi-phase image $A$: $V = I^{void}(A)$
+    \item compute cross correlation function: $Fss = cc(M, V)$
+\end{enumerate}
+
+\textbf{Interface extraction}
+There are several methods for interface extraction.
+We will focus on methods, that construct digital image of the same size.
+Pixels (or voxels) take value between $0$ and $1$:
+zero value --- inner part of phase, and positive value means pixel lies on the interface.
+
+\textit{Distance map}.
+This method creates binary image. 
+The interface between binary phases is represented by a one
+pixel thick contour (in two-dimensional case) or one voxel thick surface (in
+three-dimensional case). This contour or surface is extracted from either solid
+or void phase with the help of distance map transform with subsequent filtering
+out of pixels/voxels with distances greater than $1$.
+
+\textit{Image filtering}.
+This method creates gray scale image.
+We use Sobel operator
+to detect edges of the image $A'$, later denoted as $\nabla A$:
+$\nabla A' = S(A')$. We calculate $\|\nabla A'\|$ element-wise ($\|\cdot\|$
+denotes the usual norm on Euclidean space). This norm can be interpreted as the
+probability that a point in $A$ belongs to the interface. In a digitized image
+$\|\nabla A'\|$ can be represented as an array of floating point numbers having
+the same shape as an original image $A$.
+
+\textbf{Computing correlation}
+We will describe method of computing cross correlation function between two images $f$ and $g$: $cross\_correlation(f, g)$. In the case of auto correlation function we will replace $g$ with $f$. Algorithm is straightforward when boundary conditions are periodic.
+For non-periodic boundary conditions we will need a minor change.
+
+\textit{Periodic boundary condition}
+\begin{enumerate}
+    \item compute Fourier transform of input images: $F = fft(f), G = fft(g)$
+    \item take complex conjugation from elements of G: $G'[i, j] = conj(G[i, j])$
+    \item multiply elements of $F$ by elements of $G'$: $CC[i, j] = F[i, j] G'[i, j]$
+    \item compute inverse Fourier transform: $cc = ifft(CC)$
+    \item divide the resulting matrix by the number of pixels: $cc[i, j] = cc[i, j] / (n m)$
+\end{enumerate}
+
+\textit{Non-periodic boundary condition}
+\begin{enumerate}
+    \item Expand input images by a factor of two, padding new elements with zeros ($f^e, g^e$). If the length of the image was $n$, then the length of the expanded image will be $2n - 1$, where the last $n - 1$ values will be zero. Similarly for the width and height of the image.
+    \item compute Fourier transform of expanded images: $F = fft(f^e), G = fft(g^e)$
+    \item take complex conjugation from elements of G: $G'[i, j] = conj(G[i, j])$
+    \item multiply elements of $F$ by elements of $G'$: $CC[i, j] = F[i, j] G'[i, j]$
+    \item compute inverse Fourier transform: $cc = ifft(CC)$
+    \item circle shift $cc$ by $n - 1$ in each direction, so index range becomes from $-(n - 1)$ to $n - 1$.
+    \item Divide matrix elements by the number of pixels whose coordinate difference is equal to i, j: $cc[i, j] = cc[i, j] / q[i, j]$, $q[i, j] = (n - |i|)(m - |j|)$
+\end{enumerate}
+
+\textbf{OLD PART}
 \textit{Method 1}. The interface between binary phases is represented by a one
 pixel thick contour (in two-dimensional case) or one voxel thick surface (in
 three-dimensional case). This contour or surface is extracted from either solid

@@ -615,19 +615,18 @@ over its domain. The criterion for correctness is then:
 \end{equation*}
 for some $a$ and $\xi$. This criterion tells us exactly how much energy in
 $f_0(x)$ is concentrated in a low frequency range $[0, af]$ compared to the
-whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.05$ as
+whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.1$ as
 a strict criterion which is based on results of section
 \cref{sec:comparison}. For the images of Poisson disks from \cref{fig:scaling}
 their discretizations and $C_{0.5}$ are shown in \cref{fig:disks-res}. We
-immediately observe that the top left image (with resolution 4096x4096 and
-surface CFs very close to analytical solution) satisfies our $C_{0.5}$ criterion
-perfectly. The top right image fails to satisfy the criterion, but only to some
-small degree ($0.9185 \approx 0.95$). The other two downscaled images completely
-fail to satisfy the criterion. As we can see in conjunction from
-\cref{fig:scaling} and \cref{fig:disks-res} the criterion correctly selects
-images which are suitable for calculation of the correlation functions using
-Method2 and Method3. The criterion $C_{0.5}$ decays fast with the decline in
-image resolution as shown in \cref{fig:crit-plot}.
+immediately observe that the images on top (with resolution 4096x4096 and
+1024x1024 and surface CFs very close to analytical solution) satisfy our
+$C_{0.5}$ criterion perfectly. The other two downscaled images fail to satisfy
+the criterion. As we can see in conjunction from \cref{fig:scaling} and
+\cref{fig:disks-res} the criterion correctly selects images which are suitable
+for calculation of the correlation functions using Method2 and Method3. The
+criterion $C_{0.5}$ decays fast with the decline in image resolution as shown in
+\cref{fig:crit-plot}.
 
 \begin{figure}[ht]
   \centering
@@ -661,10 +660,60 @@ image resolution as shown in \cref{fig:crit-plot}.
 \end{figure*}
 
 \subsection{Application to binary images of porous media}
+\label{sec:application}
 After the verification of our computational approach based on analytical
 solution and establishing the criterion $C_{0.5}$ we now have enough tools to
 evaluate surface CFs for different porous media images, including real XCT and
 SEM images.
+
+For demonstration purposes, we computed correlation functions for three
+sandstone and three carbonate samples with dimensions 500x500x500
+(\cref{fig:real-data}) all of which satisfy our $C_{0.5}$ criterion. The result
+can be seen on \cref{fig:real-data-plots}.
+
+\begin{figure*}[t]
+  \centering
+  \subfigure[Sandstone 1, $C_{0.5} = 0.938$]{
+    \includegraphics[width=0.3\linewidth]{images/sandstone1.png}
+    \label{fig:sandstone1}}
+  \hfill
+  \subfigure[Sandstone 2, $C_{0.5} = 0.937$]{
+    \includegraphics[width=0.3\linewidth]{images/sandstone2.png}
+    \label{fig:sandstone2}}
+  \hfill
+  \subfigure[Sandstone 3, $C_{0.5} = 0.939$]{
+    \includegraphics[width=0.3\linewidth]{images/sandstone3.png}
+    \label{fig:sandstone3}}
+  \vskip\baselineskip
+  \subfigure[Carbonate 1, $C_{0.5} = 0.950$]{
+    \includegraphics[width=0.3\linewidth]{images/carbonate1.png}
+    \label{fig:carbonate1}}
+  \hfill
+  \subfigure[Carbonate 2, $C_{0.5} = 0.954$]{
+    \includegraphics[width=0.3\linewidth]{images/carbonate2.png}
+    \label{fig:carbonate2}}
+  \hfill
+  \subfigure[Carbonate 3, $C_{0.5} = 0.946$]{
+    \includegraphics[width=0.3\linewidth]{images/carbonate3.png}
+    \label{fig:carbonate3}}
+  \caption[]{Data used in \cref{sec:application} for calculation of correlation
+    functions.}
+  \label{fig:real-data}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \subfigure[Surface-surface function]{
+    \includegraphics[width=0.475\linewidth]{images/KIK-ss.png}
+    \label{fig:plot-ss-real}}
+  \hfill
+  \subfigure[Surface-void function]{
+    \includegraphics[width=0.475\linewidth]{images/KIK-sv.png}
+    \label{fig:plot-sv-real}}
+  \caption[]{Plots of $F_{ss}$ and $F_{sv}$ correlation functions computed for
+    samples on \cref{fig:real-data}.}
+  \label{fig:real-data-plots}
+\end{figure*}
 
 \section{Discussion and outline}
 Exact vs. for-reconstruction computation of surface CFs

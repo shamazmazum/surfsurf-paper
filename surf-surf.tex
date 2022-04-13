@@ -484,9 +484,9 @@ To evaluate the accuracy of surface CFs computations the most straightforward
 way is to compare them against analytical solutions. We begin by considering a
 single disk, and then the realization of the Poisson point process and draw
 balls of radius $R$ with centers at those locations. Starting with an image
-with resolution of 4096x4096 pixels, we then downscale it in 4, 16, and 64 times
-with the help of bicubic interpolation \cite{mexicans}. It is easy to show that
-assuming $a > 0$:
+with resolution of $4096 \times 4096$ pixels, we then downscale it in 4, 16, and
+64 times with the help of bicubic interpolation \cite{mexicans}. It is easy to
+show that assuming $a > 0$:
 \begin{align*}
   F_{ss}(a \mathbf{x}, a(\mathbf{x} + \mathbf{r})) &= a^2 F_{ss}(\mathbf{x},
   \mathbf{x} + \mathbf{r}) \\
@@ -513,7 +513,7 @@ direction.
     \includegraphics[width=0.475\linewidth]{images/plot-sv-balls.png}
     \label{fig:fsv-scaling}}
     \caption[]{The comparison of analytical and computed surface correlation
-      functions for the Poisson disks for the original 4096x4096 pixels
+      functions for the Poisson disks for the original $4096 \times 4096$ pixels
       image. Computed CFs were obtained for different image resolutions as shown
       in the legend.}
     \label{fig:scaling}
@@ -575,11 +575,11 @@ correlation functions for continuous function $f$.
 There are many different kernels to evaluate gradients, but the Sobel kernel
 performed slightly better \cref{fig:wtf2} compared to majority of other kernels
 we have explored: Ando, Scharr, Bickley, and Prewitt filters. Only the Ando’s
-filter with size of 5x5 \cite{ando_2000} outperformed the Sobel filter in terms
-of error minimization for 2D disks surface CFs computation. Nonetheless, we
-chose Sobel filter due to its simplicity, faster computations and robust
-implementation of the 3D kernel in all major libraries (where Ando is only a 2D
-filter). Gauss filter is not improving \cref{fig:wtf3}.
+filter with size of $5 \times 5$ \cite{ando_2000} outperformed the Sobel filter
+in terms of error minimization for 2D disks surface CFs
+computation. Nonetheless, we chose Sobel filter due to its simplicity, faster
+computations and robust implementation of the 3D kernel in all major libraries
+(where Ando is only a 2D filter). Gauss filter is not improving \cref{fig:wtf3}.
 
 \subsection{Criteria for accurate evaluation of surface CFs from discrete images}
 \label{sec:crit}
@@ -619,14 +619,14 @@ whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.1$ as
 a strict criterion which is based on results of section
 \cref{sec:comparison}. For the images of Poisson disks from \cref{fig:scaling}
 their discretizations and $C_{0.5}$ are shown in \cref{fig:disks-res}. We
-immediately observe that the images on top (with resolution 4096x4096 and
-1024x1024 and surface CFs very close to analytical solution) satisfy our
-$C_{0.5}$ criterion perfectly. The other two downscaled images fail to satisfy
-the criterion. As we can see in conjunction from \cref{fig:scaling} and
-\cref{fig:disks-res} the criterion correctly selects images which are suitable
-for calculation of the correlation functions using Method2 and Method3. The
-criterion $C_{0.5}$ decays fast with the decline in image resolution as shown in
-\cref{fig:crit-plot}.
+immediately observe that the images on top (with resolution $4096 \times 4096$
+and $1024 \times 1024$) have surface CFs very close to analytical solution and
+satisfy our  $C_{0.5}$ criterion perfectly. The other two downscaled images fail
+to satisfy the criterion. As we can see in conjunction from \cref{fig:scaling}
+and \cref{fig:disks-res} the criterion correctly selects images which are
+suitable for calculation of the correlation functions using Method2 and
+Method3. The criterion $C_{0.5}$ decays fast with the decline in image
+resolution as shown in \cref{fig:crit-plot}.
 
 \begin{figure}[ht]
   \centering
@@ -638,19 +638,19 @@ criterion $C_{0.5}$ decays fast with the decline in image resolution as shown in
 
 \begin{figure*}[t]
   \centering
-  \subfigure[Resolution 4096x4096, disk radius 61.44 pixels, $C_{0.5} = 0.9593$]{
+  \subfigure[Resolution $4096 \times 4096$, disk radius 61.44 pixels, $C_{0.5} = 0.9593$]{
     \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-4096.png}
     \label{fig:disks-4096}}
   \hfill
-  \subfigure[Resolution 1024x1024, disk radius 15.36 pixels, $C_{0.5} = 0.9185$]{
+  \subfigure[Resolution $1024 \times 1024$, disk radius 15.36 pixels, $C_{0.5} = 0.9185$]{
     \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-1024.png}
     \label{fig:disks-1024}}
   \vskip\baselineskip
-  \subfigure[Resolution 256x256, disk radius 3.84 pixels, $C_{0.5} = 0.8356$]{
+  \subfigure[Resolution $256 \times 256$, disk radius 3.84 pixels, $C_{0.5} = 0.8356$]{
     \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-256.png}
     \label{fig:disks-256}}
   \hfill
-  \subfigure[Resolution 64x64, disk radius 0.96 pixels, $C_{0.5} = 0.6549$]{
+  \subfigure[Resolution $64 \times 64$, disk radius 0.96 pixels, $C_{0.5} = 0.6549$]{
     \includegraphics[width=0.475\linewidth]{images/disks-0015-5e-5-64.png}
     \label{fig:disks-64}}
   \caption[]{The influence of imaging resolution on the quality of surface
@@ -667,9 +667,9 @@ evaluate surface CFs for different porous media images, including real XCT and
 SEM images.
 
 For demonstration purposes, we computed correlation functions for three
-sandstone and three carbonate samples with dimensions 500x500x500
-(\cref{fig:real-data}) all of which satisfy our $C_{0.5}$ criterion. The result
-can be seen on \cref{fig:real-data-plots}.
+sandstone and three carbonate samples with dimensions
+$500 \times 500 \times 500$ (\cref{fig:real-data}) all of which satisfy our
+$C_{0.5}$ criterion. The result can be seen on \cref{fig:real-data-plots}.
 
 \begin{figure*}[t]
   \centering

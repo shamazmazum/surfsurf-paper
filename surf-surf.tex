@@ -344,7 +344,7 @@ need a minor change.
 \textit{Periodic boundary condition}
 \begin{enumerate}
     \item compute Fourier transform of input images: $F = fft(f), G = fft(g)$
-    \item take complex conjugation from elements of G: $G'[i, j] = conj(G[i, j])$
+    \item take complex conjugation from elements of G: $G'[i, j] = \bar{G}[i, j]$
     \item multiply elements of $F$ by elements of $G'$: $CC[i, j] = F[i, j] G'[i, j]$
     \item compute inverse Fourier transform: $cc = ifft(CC)$
     \item divide the resulting matrix by the number of pixels: $cc[i, j] = cc[i, j] / (n m)$
@@ -357,14 +357,14 @@ need a minor change.
       the expanded image will be $2n - 1$, where the last $n - 1$ values will be
       zero. Similarly for the width and height of the image.
     \item compute Fourier transform of expanded images: $F = fft(f^e), G = fft(g^e)$
-    \item take complex conjugation from elements of G: $G'[i, j] = conj(G[i, j])$
+    \item take complex conjugation from elements of G: $G'[i, j] = \bar{G}[i, j]$
     \item multiply elements of $F$ by elements of $G'$: $CC[i, j] = F[i, j] G'[i, j]$
     \item compute inverse Fourier transform: $cc = ifft(CC)$
     \item circle shift $cc$ by $n - 1$ in each direction, so index range becomes
       from $-(n - 1)$ to $n - 1$.
     \item Divide matrix elements by the number of pixels whose coordinate
       difference is equal to i, j:
-      $cc[i, j] = cc[i, j] / q[i, j]$, $q[i, j] = (n - |i|)(m - |j|)$
+      $cc[i, j] = cc[i, j] / q[i, j]$, where $q[i, j] = (n - |i|)(m - |j|)$
 \end{enumerate}
 
 All methods and their consecutive stages are shown in \cref{fig:stages}. They

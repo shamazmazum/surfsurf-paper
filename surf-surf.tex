@@ -223,6 +223,29 @@ very useful in understanding our computational framework. More detailed
 information on two-point probability and surface correlation functions can be
 found in comprehensive Torquato's book \cite{Torq_book}.
 
+$M(x)$ is basically defined as infinity on the interface and zero elsewhere.
+Therefore, it is hard to directly compute $\langle M(x), M(x + r) \rangle$.
+We can replace the line of zero width and infinite value 
+with a strip of width $\varepsilon$ and value $\frac{1}{\varepsilon}$: $M(x; \varepsilon)$. 
+Then $F_{ss}(x; \varepsilon) = \langle M(x; \varepsilon), M(x + r; \varepsilon) \rangle$ 
+is simply an intersection area of two strips 
+--- original and shifted --- 
+multiplied by $(\frac{1}{\varepsilon})^2$. 
+And with $\varepsilon \to 0 \Rightarrow F_{ss}(r; \varepsilon) \to F_{ss}(r)$.
+Area between two black dashed circles on \cref{fig:Fss-explained} 
+represents $M(x; \varepsilon)$,
+red is for $M(x + r; \varepsilon)$. 
+Blue color marks the intersection area.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\linewidth]{images/Fss.png}
+  \caption[]{Interpretation of $F_{ss}$ as self-intersection of interface.
+    \textcolor{red}{Torquato described it as ``previous algorithm'', fig.3}}
+  \label{fig:Fss-explained}
+\end{figure}
+
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.9\linewidth]{images/scheme.png}

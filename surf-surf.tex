@@ -293,6 +293,15 @@ arbitrary XCT or SEM images.
 
 \textbf{High-level algorithm}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.32\linewidth]{images/original.png}
+  \includegraphics[width=0.32\linewidth]{images/sobel.png}
+  \includegraphics[width=0.32\linewidth]{images/Fss_map_sobel.png}
+  \caption{Steps of $F_{ss}$ algorithm using Sobel kernel}
+  \label{fig:Fss_algo}
+\end{figure}
+
 $F_{ss}$ algorithm:
 \begin{enumerate}
     \item reduce multi-phase image $A$ to two-phase image by applying indicator
@@ -316,6 +325,16 @@ We will focus on methods, that construct digital image of the same size.
 Pixels (or voxels) take value between $0$ and $1$:
 zero value -- inner part of phase, and positive value means pixel lies on the
 interface.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.32\linewidth]{images/sobel.png}
+  \includegraphics[width=0.32\linewidth]{images/distance_map.png}
+  \includegraphics[width=0.32\linewidth]{images/Fss_mean_dir.png}
+  \caption{Examples of interface extraction. 
+    Left --- Sobel kernel, center --- distance map, right --- result}
+  \label{fig:interface-extraction}
+\end{figure}
 
 \textit{Distance map}.
 This method creates binary image. 

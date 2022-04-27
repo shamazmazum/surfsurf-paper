@@ -148,7 +148,7 @@ methodology and describe an image library for extensive testing of our
 algorithms. \cref{sec:results} presents all major results of surface functions
 evaluations. We discuss obtained results, including the effects of image
 scaling, and outline future uses of surface functions within
-\cref{sec:scaling}. The paper concludes with a summary in \cref{sec:summary}.
+\cref{sec:outline}. The paper concludes with a summary in \cref{sec:summary}.
 
 \section{Methodological details}
 \label{sec:details}
@@ -548,7 +548,7 @@ computation. Nonetheless, we chose Sobel filter due to its simplicity, faster
 computations and robust implementation of the 3D kernel in all major libraries
 (where Ando is only a 2D filter). Gauss filter is not improving \cref{fig:wtf3}.
 
-\subsection{Criteria for accurate evaluation of surface CFs from discrete images}
+\subsection{Criterion for accurate evaluation of surface CFs from discrete images}
 \label{sec:crit}
 Let us define one-dimensional forward ($F$) and inverse ($F^{-1}$) Fourier
 transforms as:
@@ -699,6 +699,7 @@ There are examples of bad images which do not pass our criterion on
 \end{figure*}
 
 \section{Discussion and outline}
+\label{sec:outline}
 Exact vs. for-reconstruction computation of surface CFs
 
 Our way it is easy to implement higher-order statistics computations, such as
@@ -708,6 +709,7 @@ Discuss super-resolution to improve accuracy of surface functions computation
 Explain that ``digital'' is better than ``continuous''.
 
 \section{Conclusion}
+\label{sec:summary}
 Our summary says
 
 \section{Acknowledgments}

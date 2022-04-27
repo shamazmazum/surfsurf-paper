@@ -328,13 +328,21 @@ interface.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.32\linewidth]{images/sobel.png}
-  \includegraphics[width=0.32\linewidth]{images/distance_map.png}
-  \includegraphics[width=0.32\linewidth]{images/Fss_mean_dir.png}
+  \includegraphics[width=0.99\linewidth]{images/dm_sobel.png}
   \caption{Examples of interface extraction. 
-    Left --- Sobel kernel, center --- distance map, right --- result}
+    Left --- Sobel kernel, right --- distance map. 
+    Green --- theory, blue --- Sobel kernel, orange --- distance map}
   \label{fig:interface-extraction}
 \end{figure}
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.99\linewidth]{images/direction_and_map.png}
+  \caption{One direction $F_{ss}$ vs map average comparison}
+  \label{fig:direction-vs-map}
+\end{figure}
+
 
 \textit{Distance map}.
 This method creates binary image. 

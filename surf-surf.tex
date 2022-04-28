@@ -328,13 +328,21 @@ interface.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.32\linewidth]{images/sobel.png}
-  \includegraphics[width=0.32\linewidth]{images/distance_map.png}
-  \includegraphics[width=0.32\linewidth]{images/Fss_mean_dir.png}
+  \includegraphics[width=0.99\linewidth]{images/dm_sobel.png}
   \caption{Examples of interface extraction. 
-    Left --- Sobel kernel, center --- distance map, right --- result}
+    Left --- Sobel kernel, right --- distance map. 
+    Green --- theory, blue --- Sobel kernel, orange --- distance map}
   \label{fig:interface-extraction}
 \end{figure}
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.99\linewidth]{images/direction_and_map.png}
+  \caption{One direction $F_{ss}$ vs map average comparison}
+  \label{fig:direction-vs-map}
+\end{figure}
+
 
 \textit{Distance map}.
 This method creates binary image. 
@@ -579,15 +587,40 @@ are shown on \cref{fig:resized-cfs}.
   \label{fig:resized-cfs}
 \end{figure*}
 
-\subsection{The choice of filter’s kernel to extract the interface (gradient)}
-There are many different kernels to evaluate gradients, but the Sobel kernel
-performed slightly better \cref{fig:wtf2} compared to majority of other kernels
-we have explored: Ando, Scharr, Bickley, and Prewitt filters. Only the Ando’s
-filter with size of $5 \times 5$ \cite{ando_2000} outperformed the Sobel filter
-in terms of error minimization for 2D disks surface CFs
-computation. Nonetheless, we chose Sobel filter due to its simplicity, faster
-computations and robust implementation of the 3D kernel in all major libraries
-(where Ando is only a 2D filter). Gauss filter is not improving \cref{fig:wtf3}.
+\subsection{The choice of method to extract the interface (gradient)}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.99\linewidth]{images/sobel-vs-distance-map.png}
+  \caption{Comparison of Sobel filter and distance map on high-resolution image (60 pixels per disk radius)}
+  \label{fig:sobel-vs-distance-map}
+\end{figure}
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.99\linewidth]{images/kernels.png}
+  \caption{Comparison of different filters.}
+  \label{fig:kernels}
+\end{figure}
+
+As \cref{fig:interface-extraction} shows, 
+both methods --- distance map and image filtering --- 
+have an error compared to the analytical solution.
+But the image used for \cref{fig:interface-extraction} is low resolution (about 10 pixels per radius).
+What if we increase the resolution?
+\Cref{fig:sobel-vs-distance-map} shows a different picture:
+the image filtering method achieved an analytical solution 
+while the distance map failed to do so.
+This is why we advocate the use of image filtering to calculate surface features.
+
+
+There are many different kernels for evaluating gradients,
+we investigated: Sobel, Ando, Sharr, Bickley and Prewitt filters.
+Their performance is almost the same \cref{fig:kernels}.
+The errors against the analytical solution are close.
+And different kernels work better for different images.
+Therefore, it is difficult to recommend a specific kernel.
 
 \subsection{Criterion for accurate evaluation of surface CFs from discrete images}
 \label{sec:crit}

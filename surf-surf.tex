@@ -542,15 +542,14 @@ correlation functions for continuous function $f$.
 You can use resizing to obtain images of higher dimensionality and calculate
 surface functions for resized images to get more accurate result. Because a
 resized image becomes grayscale we use the following function as an indicator
-for the void phase, provided the void phase is marked as 0 in the original
-image:
+for the void phase provided the void phase is marked as 0 in the original image:
 \begin{equation*}
-  I^{(void)}(x) = \left\{
-  \begin{array}{ll}
-    1 & \quad x < 0.3 \\
-    0 & \quad \text{otherwise}
-  \end{array} \right.
+  I^{(void)}(x) = (1 - x)^{1.5}
 \end{equation*}
+Assuming an original small image is already two-phase we use the following
+indicator function used to reduce multiphase image to two phases: $I(x) = x$
+which is simply an identity function.
+
 All interpolation methods are good for resizing purposes with exception of
 nearest-neighbor. At \cref{fig:resized} you can see images of overlapped disks
 with almost same surface-surface and surface-void functions. Correlation

@@ -153,11 +153,9 @@ scaling, and outline future uses of surface functions within
 \section{Methodological details}
 \label{sec:details}
 \subsection{Correlation functions and definitions}
-First, we introduce an indicator function $I^{(i)}(x)$, which describes the
-affiliation between local points (pixels for 2D and voxels for 3D digitized
-images) of structure under study. For a two-phase (or binary) system
-(e.g. solid-pore) the indicator function will take the following form in each
-location $x$ in the n-dimensional Euclidean space $\mathbb{R}^n$
+First, we introduce an indicator function $I^{(i)}(x)$ which marks pixels for 2D
+and voxels for 3D digitized images as belonging to the phase $i$ or not. It can
+be defined so:
 \begin{equation*}
   I^{(i)}(x) = \left\{
   \begin{array}{ll}
@@ -176,10 +174,10 @@ fraction of a given phase. For binary media the following equality holds:
 In a similar fashion we can define an interface indicator function $M(x)$ which
 provides interface area $s$ if averaged over the whole image:
 \begin{align}
-  M(x) &= |\nabla I^{(solid)}(x)| =|\nabla I^{(void)}(x)| \label{eq:interface} \\
+  M(x) = |\nabla I^{(solid)}(x)| &= |\nabla I^{(void)}(x)| \label{eq:interface} \\
   \langle M(x) \rangle &= s
 \end{align}
-The simplest, yet foundational correlation function is two-point probability
+The simplest, yet foundational correlation function is the two-point probability
 function $S_2$ which is defined as a probability to sample the ends of a line
 segment within the same phase:
 \begin{equation}
@@ -303,21 +301,30 @@ arbitrary XCT or SEM images.
 \end{figure}
 
 $F_{ss}$ algorithm:
-\begin{enumerate}
-    \item reduce multi-phase image $A$ to two-phase image by applying indicator
-      function $A'= I(A)$.
-    \item extract interface from binary image $A'$ as image of the same size $M = S(A')$
-    \item compute auto correlation function of interface $F_{ss} = S_2(M)$
-\end{enumerate}
+\begin{algorithmic}[1]
+  \Procedure{surfsurf}{$A, i$}
+  \State $A' \gets I^{(i)}(A)$
+  \Comment{Apply indicator function to $A$.}
+  \State $M \gets S(A')$
+  \Comment{Extract interface from $A'$.}
+  \State \textbf{return} $S_2(M)$
+  \Comment{Autocorrelation of $M$.}
+  \EndProcedure
+\end{algorithmic}
 
 $F_{sv}$ algorithm:
-\begin{enumerate}
-    \item reduce multi-phase image $A$ to two-phase image by applying indicator
-      function $A'= I(A)$.
-    \item extract interface from binary image $A'$ as image of the same size: $M = S(A')$
-    \item extract void phase from multi-phase image $A$: $V = I^{(void)}(A)$
-    \item compute cross correlation function: $F_{sv} = cc(M, V)$
-\end{enumerate}
+\begin{algorithmic}[1]
+  \Procedure{surfsurf}{$A, i$}
+  \State $A' \gets I^{(i)}(A)$
+  \Comment{Apply indicator function to $A$.}
+  \State $M \gets S(A')$
+  \Comment{Extract interface from $A'$.}
+  \State $V \gets I^{(void)}(A')$
+  \Comment{Extract void phase from $A'$.}
+  \State \textbf{return} $M \star V$
+  \Comment{Cross-correlation of $M$ and $V$.}
+  \EndProcedure
+\end{algorithmic}
 
 \textbf{Interface extraction}
 There are several methods for interface extraction.
@@ -353,7 +360,7 @@ or void phase with the help of distance map transform with subsequent filtering
 out of pixels/voxels with distances greater than $1$.
 
 \textit{Image filtering}.
-This method creates gray scale image. We use Sobel operator to detect edges of
+This method creates grayscale image. We use Sobel operator to detect edges of
 the image $A'$, later denoted as $\nabla A$: $\nabla A' = S(A')$. We calculate
 $\|\nabla A'\|$ element-wise ($\|\cdot\|$ denotes the usual norm on Euclidean
 space). This norm can be interpreted as the probability that a point in $A$
@@ -364,35 +371,44 @@ original image $A$.
 \textbf{Computing correlation}
 We will describe method of computing cross correlation function between two
 images $f$ and $g$: $cross\_correlation(f, g)$. In the case of auto correlation
-function we will replace $g$ with $f$. Algorithm is straightforward when
-boundary conditions are periodic. For non-periodic boundary conditions we will
-need a minor change.
+function we assume $f = g$. Algorithm is straightforward when boundary
+conditions are periodic. For non-periodic boundary conditions we will need a
+minor change.
 
 \textit{Periodic boundary condition}
-\begin{enumerate}
-    \item compute Fourier transform of input images: $F = fft(f), G = fft(g)$
-    \item take complex conjugation from elements of G: $G'[i, j] = \bar{G}[i, j]$
-    \item multiply elements of $F$ by elements of $G'$: $CC[i, j] = F[i, j] G'[i, j]$
-    \item compute inverse Fourier transform: $cc = ifft(CC)$
-    \item divide the resulting matrix by the number of pixels: $cc[i, j] = cc[i, j] / (n m)$
-\end{enumerate}
+\begin{algorithmic}[1]
+  \Procedure{cross\_correlation}{$f, g$}
+  \State $\hat{f} = F(f)$
+  \State $\hat{g} = F(g)$
+  \Comment Compute FFT of the input.
+  \State $\hat{cc} \gets \hat{f} \cdot \overline{\hat{g}}$
+  \Comment Multiply element-wise.
+  \State $cc \gets F^{-1}(\hat{cc})$
+  \Comment Compute IFFT of $\hat{cc}$.
+  \State \textbf{return} $cc$ divided by the number of pixels in the input.
+  \EndProcedure
+\end{algorithmic}
 
 \textit{Non-periodic boundary condition}
-\begin{enumerate}
-    \item Expand input images by a factor of two, padding new elements with
-      zeros ($f^e, g^e$). If the length of the image was $n$, then the length of
-      the expanded image will be $2n - 1$, where the last $n - 1$ values will be
-      zero. Similarly for the width and height of the image.
-    \item compute Fourier transform of expanded images: $F = fft(f^e), G = fft(g^e)$
-    \item take complex conjugation from elements of G: $G'[i, j] = \bar{G}[i, j]$
-    \item multiply elements of $F$ by elements of $G'$: $CC[i, j] = F[i, j] G'[i, j]$
-    \item compute inverse Fourier transform: $cc = ifft(CC)$
-    \item circle shift $cc$ by $n - 1$ in each direction, so index range becomes
-      from $-(n - 1)$ to $n - 1$.
-    \item Divide matrix elements by the number of pixels whose coordinate
-      difference is equal to i, j:
-      $cc[i, j] = cc[i, j] / q[i, j]$, where $q[i, j] = (n - |i|)(m - |j|)$
-\end{enumerate}
+\begin{algorithmic}[1]
+  \Procedure{cross\_correlation}{$f, g$}
+  \State Pad $f$ and $g$ with zeros in each dimension to the size $2n-1$ where
+  $n$ is the size of the image in that dimension.
+  \State $\hat{f} = F(f)$
+  \State $\hat{g} = F(g)$
+  \Comment Compute FFT of the input.
+  \State $\hat{cc} \gets \hat{f} \cdot \overline{\hat{g}}$
+  \Comment Multiply element-wise.
+  \State $cc \gets F^{-1}(\hat{cc})$
+  \Comment Compute IFFT of $\hat{cc}$.
+  \State circle shift $cc$ by $n - 1$ in each direction, so index range becomes
+  from $-(n - 1)$ to $n - 1$.
+  \State $cc_{ij} \gets cc_{ij} / q_{ij}$ where $q_{ij} = (n - |i|)(m - |j|)$
+  \Comment Divide each element $cc_{ij}$ by the number of pixels whose
+  coordinate difference is equal to $(i, j)$.
+  \State \textbf{return} $cc$.
+  \EndProcedure
+\end{algorithmic}
 
 All methods and their consecutive stages are shown in \cref{fig:stages}. They
 are also a part of \code{CorrelationFunctions.jl} package \cite{ourpapaer} for

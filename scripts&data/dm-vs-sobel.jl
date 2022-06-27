@@ -12,7 +12,8 @@ export gendisks, ss_theory, sv_theory,
     gradient, distance_map_edge, average,
     produce_fucking_graphics!,
     produce_map_vs_dir_plot!,
-    produce_kernel_plot!
+    produce_kernel_plot!,
+    produce_another_comparison!
 
 function gencenters(side, λ)
     n = (λ * side^2) |> Poisson |> rand
@@ -201,6 +202,32 @@ function produce_kernel_plot!()
     xlim([0, 400])
     ylim([0, 0.00004])
     savefig("surfsurf-paper/images/kernels.png")
+end
+
+function produce_another_comparison!()
+    Random.seed!(1)
+    img   = gendisks(5000, 70, 3e-6)
+    th(x) = ss_theory(x, 70, 3e-6)
+
+    function plot_it!(fn)
+        interface = fn(img)
+        cf = interface |> autocorr |> reflect
+        xs, ys = average(cf)
+        plot(xs, ys, linewidth = 2.0)
+        return xs
+    end
+
+    figure(figsize = (10, 8), dpi = 300)
+    rc("font", size = 18)
+    xs = plot_it!(gradient)
+    xs = plot_it!(distance_map_edge)
+    plot(xs, th.(xs), linewidth = 2.0)
+    xlabel(raw"$r$")
+    ylabel(raw"$F_{ss}(r)$")
+    legend(["Sobel", "Distance map", "Theory"])
+    xlim([0, 400])
+    ylim([0, 0.00004])
+    savefig("surfsurf-paper/images/sobel-vs-distance-map.png")
 end
 
 end

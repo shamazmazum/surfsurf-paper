@@ -10,7 +10,8 @@ using PyPlot
 # Disk generation code is copied from CorrelationFunctions.jl test suite
 export gendisks, ss_theory, sv_theory,
     gradient, distance_map_edge, average,
-    produce_fucking_graphics!
+    produce_fucking_graphics!,
+    produce_map_vs_dir_plot!
 
 function gencenters(side, λ)
     n = (λ * side^2) |> Poisson |> rand
@@ -93,7 +94,7 @@ function average(arr :: AbstractArray)
     dict = Dict{Float64, Array{Float64}}()
 
     for idx in indices
-        dist = sqrt(sum(Tuple(idx - center) .^2))
+        dist = (Tuple(idx - center) .^2) |> sum |> sqrt |> floor
         vals = get(dict, dist, Float64[])
         push!(vals, arr[idx])
         dict[dist] = vals
@@ -107,7 +108,7 @@ end
 
 function produce_fucking_graphics!()
     Random.seed!(1)
-    img = DMvsSobel.gendisks(1000, 10, 0.002)
+    img = gendisks(1000, 10, 0.002)
     save("surfsurf-paper/images/original.png", img[1:100, 1:100])
 
     function plot_it!(fn)
@@ -145,6 +146,26 @@ function produce_fucking_graphics!()
 
     plot_it!(cfs, "sobel")
     plot_it!(cfd, "dm")
+end
+
+function produce_map_vs_dir_plot!()
+    Random.seed!(1)
+    img = gendisks(1000, 10, 0.002)
+    cf  = img |> gradient |> autocorr
+    cfr = cf  |> reflect
+    xs, ys = average(cfr)
+    th(x)  = ss_theory(x, 10, 0.002)
+
+    figure(figsize = (10, 9); dpi = 300)
+    rc("font", size = 18)
+    plot(xs, th.(xs), linewidth = 2.0)
+    plot(xs, ys, linewidth = 2.0)
+    plot(cf[1,:], linewidth = 2.0)
+    xlabel(raw"$r$")
+    ylabel(raw"$F_{ss}(r)$")
+    legend(["Theory", "Map average", "One direction"])
+    xlim([0, 40])
+    savefig("surfsurf-paper/images/direction_and_map.png")
 end
 
 end

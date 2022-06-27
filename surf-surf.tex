@@ -153,13 +153,13 @@ scaling, and outline future uses of surface functions within
 \section{Methodological details}
 \label{sec:details}
 \subsection{Correlation functions and definitions}
-First, we introduce an indicator function $I^{(i)}(x)$ which marks pixels for 2D
-and voxels for 3D digitized images as belonging to the phase $i$ or not. It can
-be defined so:
+First, we introduce an indicator function $I^{(i)}(\mathbf{x})$ which marks
+pixels of 2D and voxels of 3D digitized images as belonging to the phase $i$ or
+not. It can be defined so:
 \begin{equation*}
-  I^{(i)}(x) = \left\{
+  I^{(i)}(\mathbf{x}) = \left\{
   \begin{array}{ll}
-    1 & \quad x \in V_i \\
+    1 & \quad \mathbf{x} \in V_i \\
     0 & \quad \text{otherwise}
   \end{array}
   \right.
@@ -169,27 +169,32 @@ statistically homogeneous media the ensemble average of $I^{(i)}$ equals volume
 fraction of a given phase. For binary media the following equality holds:
 \begin{align*}
   \phi_{void} &+ \phi_{solid} = 1 \\
-  \phi_i &= \langle I^{(i)}(x) \rangle
+  \phi_i &= \langle I^{(i)}(\mathbf{x}) \rangle
 \end{align*}
-In a similar fashion we can define an interface indicator function $M(x)$ which
-provides interface area $s$ if averaged over the whole image:
+In a similar fashion we can define an interface indicator function
+$M(\mathbf{x})$ which provides interface area $s$ if averaged over the whole
+image:
 \begin{align}
-  M(x) = |\nabla I^{(solid)}(x)| &= |\nabla I^{(void)}(x)| \label{eq:interface} \\
-  \langle M(x) \rangle &= s
+  M(\mathbf{x}) = |\nabla I^{(solid)}(\mathbf{x})| &= |\nabla I^{(void)}(\mathbf{x})|
+  \label{eq:interface} \\
+  \langle M(\mathbf{x}) \rangle &= s
 \end{align}
 The simplest, yet foundational correlation function is the two-point probability
-function $S_2$ which is defined as a probability to sample the ends of a line
-segment within the same phase:
+function $S_2$ which is defined as a probability that the ends of a random line
+segment belong to the same phase:
 \begin{equation}
-  S_2^{(i)}(x_1, x_2) = \langle I^{(i)}(x_1) I^{(i)}(x_2) \rangle \label{eq:twopoint}
+  S_2^{(i)}(\mathbf{x}_1, \mathbf{x}_2) = \langle I^{(i)}(\mathbf{x}_1)
+  I^{(i)}(\mathbf{x}_2) \rangle \label{eq:twopoint}
 \end{equation}
 This equation can be further simplified for statistically homogeneous media, as
-$S_2$ will dependent only on the relative displacement $r$:
+$S_2$ will dependent only on the relative displacement $\mathbf{r}$:
 \begin{equation*}
-  S_2^{(i)}(x_1, x_2) = S_2^{(i)}(r)
+  S_2^{(i)}(\mathbf{x}_1, \mathbf{x}_2) = S_2^{(i)}(\mathbf{r})
 \end{equation*}
+For isotropic media a vector displacement $\mathbf{r}$ can be replaced with its
+length $r = |\mathbf{r}|$ and $S_2(\mathbf{r})$ with $S_2(r) = S_2(|\mathbf{r}|)$.
 Now, analogously to $S_2$ we can define surface-surface and surface-void
-correlation functions:
+correlation functions (for homogeneous and isotropic media straight away):
 \begin{align}
   F_{ss}(r) &= \langle M(x)M(x+r) \rangle \label{eq:fss} \\
   F_{sv}(r) &= \langle M(x)I^{(void)}(x+r) \label{eq:fsv} \rangle

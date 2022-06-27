@@ -11,7 +11,8 @@ using PyPlot
 export gendisks, ss_theory, sv_theory,
     gradient, distance_map_edge, average,
     produce_fucking_graphics!,
-    produce_map_vs_dir_plot!
+    produce_map_vs_dir_plot!,
+    produce_kernel_plot!
 
 function gencenters(side, λ)
     n = (λ * side^2) |> Poisson |> rand
@@ -156,7 +157,7 @@ function produce_map_vs_dir_plot!()
     xs, ys = average(cfr)
     th(x)  = ss_theory(x, 10, 0.002)
 
-    figure(figsize = (10, 9); dpi = 300)
+    figure(figsize = (10, 8); dpi = 300)
     rc("font", size = 18)
     plot(xs, th.(xs), linewidth = 2.0)
     plot(xs, ys, linewidth = 2.0)
@@ -166,6 +167,40 @@ function produce_map_vs_dir_plot!()
     legend(["Theory", "Map average", "One direction"])
     xlim([0, 40])
     savefig("surfsurf-paper/images/direction_and_map.png")
+end
+
+function produce_kernel_plot!()
+    Random.seed!(1)
+    kernels = [KernelFactors.sobel,
+               KernelFactors.scharr,
+               KernelFactors.bickley,
+               KernelFactors.prewitt,
+               KernelFactors.ando3,
+               KernelFactors.ando4,
+               KernelFactors.ando5]
+
+    img   = gendisks(5000, 70, 3e-6)
+    th(x) = ss_theory(x, 70, 3e-6)
+
+    figure(figsize = (10, 8); dpi = 300)
+    rc("font", size = 18)
+    ticklabel_format(axis = "y", scilimits = (0, 0))
+    plot(0:400, th.(0:400))
+
+    for kernel in kernels
+        gr(x)  = gradient(x, kernel)
+        cf     = img |> gr |> autocorr |> reflect
+        xs, ys = average(cf)
+        plot(xs, ys)
+    end
+
+    xlabel(raw"$r$")
+    ylabel(raw"$F_{ss}(r)$")
+    legend(["Theory", "Sobel", "Scharr", "Bickley", "Prewitt",
+            "Ando3", "Ando4", "Ando5"])
+    xlim([0, 400])
+    ylim([0, 0.00004])
+    savefig("surfsurf-paper/images/kernels.png")
 end
 
 end

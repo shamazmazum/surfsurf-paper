@@ -10,6 +10,7 @@ using Random
 include("spheres.jl")
 
 export produce_plots_with_disks!,
+    produce_plots_with_noise!,
     produce_disks!
 
 function produce_disks!()
@@ -65,6 +66,50 @@ function produce_plots_with_disks!()
     ylabel(raw"$aF_{sv}(ar)$")
     legend(["64x64", "256x256", "1024x1024", "4096x4096", "Theory"])
     savefig("surfsurf-paper/images/plot-sv-balls.png")
+end
+
+function produce_plots_with_noise!()
+    fn(x, y, n) = value_noise(20x/n, 20y/n, 0, 3, 43432) < 0.5
+
+    img64   = [fn(x, y, 64)   for x in 1:64,   y in 1:64]
+    img256  = [fn(x, y, 256)  for x in 1:256,  y in 1:256]
+    img1024 = [fn(x, y, 1024) for x in 1:1024, y in 1:1024]
+    img4096 = [fn(x, y, 4096) for x in 1:4096, y in 1:4096]
+
+    ss64   = Directional.surfsurf(img64,   false; periodic = true) |> mean
+    ss256  = Directional.surfsurf(img256,  false; periodic = true) |> mean
+    ss1024 = Directional.surfsurf(img1024, false; periodic = true) |> mean
+    ss4096 = Directional.surfsurf(img4096, false; periodic = true) |> mean
+
+    sv64   = Directional.surfvoid(img64,   false; periodic = true) |> mean
+    sv256  = Directional.surfvoid(img256,  false; periodic = true) |> mean
+    sv1024 = Directional.surfvoid(img1024, false; periodic = true) |> mean
+    sv4096 = Directional.surfvoid(img4096, false; periodic = true) |> mean
+
+    figure(figsize = (10, 8), dpi = 300)
+    rc("font", size = 18)
+    ticklabel_format(axis = "y", scilimits = (0, 0))
+    plot(range(0, 2048-1, length(ss64)),   ss64   * (64   / 4096)^2; linewidth = 2.0)
+    plot(range(0, 2048-1, length(ss256)),  ss256  * (256  / 4096)^2; linewidth = 2.0)
+    plot(range(0, 2048-1, length(ss1024)), ss1024 * (1024 / 4096)^2; linewidth = 2.0)
+    plot(ss4096; linewidth = 2.0)
+    ylim([0, 4e-5])
+    xlabel(raw"$ar$")
+    ylabel(raw"$a^2F_{ss}(ar)$")
+    legend(["64x64", "256x256", "1024x1024", "4096x4096"])
+    savefig("surfsurf-paper/images/plot-ss-noise.png")
+
+    figure(figsize = (10, 8), dpi = 300)
+    rc("font", size = 18)
+    ticklabel_format(axis = "y", scilimits = (0, 0))
+    plot(range(0, 2048-1, length(sv64)),   sv64   * (64   / 4096); linewidth = 2.0)
+    plot(range(0, 2048-1, length(sv256)),  sv256  * (256  / 4096); linewidth = 2.0)
+    plot(range(0, 2048-1, length(sv1024)), sv1024 * (1024 / 4096); linewidth = 2.0)
+    plot(sv4096; linewidth = 2.0)
+    xlabel(raw"$ar$")
+    ylabel(raw"$aF_{sv}(ar)$")
+    legend(["64x64", "256x256", "1024x1024", "4096x4096"])
+    savefig("surfsurf-paper/images/plot-sv-noise.png")
 end
 
 end

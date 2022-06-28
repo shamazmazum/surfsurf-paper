@@ -23,36 +23,51 @@
 \newcommand{\apref}[1]{Appendix \ref{#1}}
 
 \begin{document}
-%*Corresponding author: Kirill M. Gerke, Tel.: +79661877715, E-mail: kg@ifz.ru,
-%Address: Schmidt Institute of Physics of the Earth of Russian Academy of
-%Sciences, Bolshaya Gruzinskaya str. 10/1, Moscow, 123242, Russia
-\author{Aleksei I. Samarin}
-\altaffiliation{Computational Mathematics and Cybernetics, Lomonosov Moscow
-  State University, Moscow, 119991, Russia}
-\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
-  Sciences, Moscow, 123242, Russia}
-\author{Vasily Postnicov}
-\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
-  Sciences, Moscow, 123242, Russia}
-\author{Marina V. Karsanina}
-\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
-  Sciences, Moscow, 123242, Russia}
-\author{Efim V. Lavrukhin}
-\altaffiliation{Computational Mathematics and Cybernetics, Lomonosov Moscow
-  State University, Moscow, 119991, Russia}
-\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
-  Sciences, Moscow, 123242, Russia}
-\author{Kirill M. Gerke}
-\email[E-mail:]{kg@ifz.ru}
-\affiliation{Schmidt Institute of Physics of the Earth of Russian Academy of
-  Sciences, Moscow, 123242, Russia}
+\preprint{APS/123-QED}
+
+\author{Aleksei I. Samarin\textsuperscript{1,2}}
+\author{Vasily Postnicov\textsuperscript{1}}
+\author{Marina V. Karsanina\textsuperscript{1}}
+\author{Efim V. Lavrukhin\textsuperscript{1,2}}
+\author{Alexey Khlyupin\textsuperscript{1}}
+\author{Kirill M. Gerke\textsuperscript{1}}
+\email{kg@ifz.ru}
+
+\affiliation{\textsuperscript{1}Schmidt Institute of Physics of the Earth of
+  Russian Academy of Sciences, Moscow, 107031, Russia}
+\affiliation{\textsuperscript{2}Computational Mathematics and Cybernetics,
+  Lomonosov Moscow State University, Moscow, 119991, Russia}
 
 \title{Robust surface correlation functions evaluation from discrete digital
   images}
 
 \begin{abstract}
-  What have we done?
+  Pore-scale modelling based on the 3D structural information of porous
+  materials has enournous potential in assessing physical properties beyond the
+  capabilities of laboratiry methods. Such capabilities are pricely in terms of
+  computational expenses - this limits the applicability of the direct
+  simulations to a small volume and requires high performance computational
+  resources, espeically for multi-phase flow simulations. The only pore-scale
+  technique capable of dealing with large representative volumes of porous
+  samples is pore-network (PNM) based modelling. The problem of PNM approach is
+  that 3D pore geometry first needs to be simplified into a graph of pores and
+  throats that conserve topological and geometrical properties of the original
+  3D image. While a lot of progress was achieved in terms of geometry
+  representation, no methodology provides full conservation of the topological
+  features of the pore structure.  In this paper we present a pore-network
+  extraction algorithm for binary 3D images based on discrete Morse theory and
+  persistent homology that by design targets topology preservation. In addition
+  to methdological developments, we also clarify the relationship between
+  topological characteristics of constructed Morse chain complex and
+  pore-network elements. We show, that the Euler numbers calculated for PNMs
+  based on our methodology coincide with those obtained using the direct
+  topological analysis. The characteristics of extracted pore-network are
+  calculated for several 3D porous binary images and compared with the results
+  of maximum inscribed balls-based, watershed-based and hybrid approach to
+  support our methdology.
 \end{abstract}
+\keywords {3D images; correlation functions; surface-surface function;
+  surface-void function; image analysis; image scaling}
 
 \maketitle
 

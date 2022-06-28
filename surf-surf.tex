@@ -475,15 +475,15 @@ with resolution of $4096 \times 4096$ pixels, we then downscale it in 4, 16, and
 64 times with the help of bicubic interpolation \cite{mexicans}. It is easy to
 show that assuming $a > 0$:
 \begin{align}
-  F_{ss}(a \mathbf{x}, a(\mathbf{x} + \mathbf{r})) &= a^2 F_{ss}(\mathbf{x},
+  a^2 F_{ss}(a \mathbf{x}, a(\mathbf{x} + \mathbf{r})) &= F_{ss}(\mathbf{x},
   \mathbf{x} + \mathbf{r}) \label{eq:scale-ss} \\
-  F_{sv}(a \mathbf{x}, a(\mathbf{x} + \mathbf{r})) &= a F_{sv}(\mathbf{x},
+  a F_{sv}(a \mathbf{x}, a(\mathbf{x} + \mathbf{r})) &= F_{sv}(\mathbf{x},
   \mathbf{x} + \mathbf{r}) \label{eq:scale-sv}
 \end{align}
 
 Assuming that our images represent homogeneous and isotropic media, we calculate
-$F_{ss}(r)$ and $F_{sv}(r)$ for each original and rescaled image and multiply it
-by coefficient $a^2 = (L_{scaled}/L_{orig})^2$ and $a = L_{scaled}/L_{orig}$
+$F_{ss}(ar)$ and $F_{sv}(ar)$ for each original and rescaled image and multiply
+it by coefficient $a^2 = (L_{scaled}/L_{orig})^2$ and $a = L_{scaled}/L_{orig}$
 respectively, where $L_{scaled}$ is the side of the rescaled image and
 $L_{orig}$ is the side of the original image. The resulting scaled surface CFs
 as computed using the Method 2 are shown in \cref{fig:scaling}. Note that
@@ -507,7 +507,7 @@ direction.
 \end{figure*}
 
 We can observe two effects when downscaling the original image. The
-first effect is that $F_{ss}(r)$ and $F_{sv}(r)$ for downscaled images lack in
+first effect is that $F_{ss}(ar)$ and $F_{sv}(ar)$ for downscaled images lack in
 detail (i.e. they are less ``noisy''). This can be easily explained by that the
 interface between phases that becomes ``simpler'' when resolution decreases. The
 second and much more important effect is that both correlation functions become

@@ -68,9 +68,10 @@ function produce_fucking_graphics!()
     img = gendisks(1000, 10, 0.002)
     save("surfsurf-paper/images/original.png", img[1:100, 1:100])
 
-    function plot_it!(fn)
-        interface = fn(img)
-        cf = interface |> autocorr |> reflect
+    function plot_it!(fns)
+        interfaces = map(fn -> fn(img), fns)
+        cfss = interfaces .|> autocorr .|> reflect
+        cf  = reduce(+, cfss) / length(cfss)
         xs, ys = average(cf)
         plot(xs, ys, linewidth = 2.0)
         return xs, cf
@@ -78,19 +79,26 @@ function produce_fucking_graphics!()
 
     figure(figsize = (10, 9), dpi = 300)
     rc("font", size = 18)
-    xs, cfs = plot_it!(gradient)
-    xs, cfd = plot_it!(distance_map_edge)
+    xs, cfs = plot_it!([gradient])
+    xs, cfd = plot_it!([distance_map_edge])
+    xs, cfd = plot_it!([distance_map_edge ∘ (.!)])
+    xs, cfd = plot_it!([distance_map_edge,
+                        distance_map_edge ∘ (.!)])
     th(x) = ss_theory(x, 10, 0.002)
     plot(xs, th.(xs), linewidth = 2.0)
     xlabel(raw"$r$")
     ylabel(raw"$F_{ss}(r)$")
-    legend(["Sobel kernel", "Distance transform", "Theory"]; loc = 2)
+    legend(["Sobel kernel",
+            "Distance transform (outer border)",
+            "Distance transform (inner border)",
+            "Distance transform (mean)",
+            "Theory"]; loc = 2)
     xlim([0, 40])
     savefig("surfsurf-paper/images/Fss_mean_dir.png")
     save("surfsurf-paper/images/distance_map.png", img[1:100, 1:100] |> distance_map_edge)
     save("surfsurf-paper/images/sobel.png", img[1:100, 1:100] |> gradient)
 
-    function plot_it!(cf, name)
+    function plot_it2!(cf, name)
         figure(figsize = (6, 6), dpi = 300)
         axis("off")
         s = CartesianIndex(size(cf) .÷ 2)
@@ -101,8 +109,8 @@ function produce_fucking_graphics!()
                 pad_inches = 0)
     end
 
-    plot_it!(cfs, "sobel")
-    plot_it!(cfd, "dm")
+    plot_it2!(cfs, "sobel")
+    plot_it2!(cfd, "dm")
 end
 
 function produce_map_vs_dir_plot!()

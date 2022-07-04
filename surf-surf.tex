@@ -386,7 +386,7 @@ $F_{ss}$ algorithm:
   \Comment{Apply indicator function to $A$.}
   \State $M \gets S(A')$
   \Comment{Extract interface from $A'$.}
-  \State \textbf{return} $S_2(M)$
+  \State \textbf{return} $\star(M, M)$
   \Comment{Autocorrelation of $M$.}
   \EndProcedure
 \end{algorithmic}
@@ -400,7 +400,7 @@ $F_{sv}$ algorithm:
   \Comment{Extract interface from $A'$.}
   \State $V \gets I^{(void)}(A')$
   \Comment{Extract void phase from $A'$.}
-  \State \textbf{return} $M \star V$
+  \State \textbf{return} $\star(M, V)$
   \Comment{Cross-correlation of $M$ and $V$.}
   \EndProcedure
 \end{algorithmic}
@@ -460,14 +460,13 @@ original image $A$.
 
 \subsection{Computing correlation}
 We will describe method of computing cross correlation function between two
-images $f$ and $g$: $cross\_correlation(f, g)$. In the case of auto correlation
-function we assume $f = g$. Algorithm is straightforward when boundary
-conditions are periodic. For non-periodic boundary conditions we will need a
-minor change.
+images $f$ and $g$: $\star (f, g)$. In the case of auto correlation function we
+assume $f = g$. Algorithm is straightforward when boundary conditions are
+periodic. For non-periodic boundary conditions we will need a minor change.
 
 \textit{Periodic boundary condition}
 \begin{algorithmic}[1]
-  \Procedure{cross\_correlation}{$f, g$}
+  \Procedure{$\star$}{$f, g$}
   \State $\hat{f} = F(f)$
   \State $\hat{g} = F(g)$
   \Comment Compute FFT of the input.
@@ -481,7 +480,7 @@ minor change.
 
 \textit{Non-periodic boundary condition}
 \begin{algorithmic}[1]
-  \Procedure{cross\_correlation}{$f, g$}
+  \Procedure{$\star$}{$f, g$}
   \State Pad $f$ and $g$ with zeros in each dimension to the size $2n-1$ where
   $n$ is the size of the image in that dimension.
   \State $\hat{f} = F(f)$

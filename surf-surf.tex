@@ -29,7 +29,7 @@
 \author{Vasily Postnicov\textsuperscript{1}}
 \author{Marina V. Karsanina\textsuperscript{1}}
 \author{Efim V. Lavrukhin\textsuperscript{1,2}}
-\author{Alexey Khlyupin\textsuperscript{1}}
+\author{Alexey N. Khlyupin\textsuperscript{1,3}}
 \author{Kirill M. Gerke\textsuperscript{1}}
 \email{kg@ifz.ru}
 
@@ -37,9 +37,11 @@
   Russian Academy of Sciences, Moscow, 107031, Russia}
 \affiliation{\textsuperscript{2}Computational Mathematics and Cybernetics,
   Lomonosov Moscow State University, Moscow, 119991, Russia}
+\affiliation{\textsuperscript{3}Moscow Institute of Physics and Technology, 9
+  Institutskiy per., Dolgoprudny, Moscow Region, 141701, Russia}
 
-\title{Robust surface correlation functions evaluation from discrete digital
-  images}
+\title{Robust surface correlation functions evaluation from experimental
+  discrete digital images}
 
 \begin{abstract}
   Pore-scale modelling based on the 3D structural information of porous
@@ -109,23 +111,23 @@ approach suffers from the limitation of CFs that can be obtained this way
 resolution or/and resolution to field-of-view ratio \cite{SciRep1}. Moreover,
 the most useful imaging methods such as X-ray computed tomography (XCT) and
 scanning electron microscopy (SEM) due to their underlying physical principles
-provide gray-scale images which need to be segmented into constituent phases
-before CFs computation. It is important to note that such gray-scale images do
-not represent phases spatial distribution, but, for example, X-ray spatial
-attenuation or electron back-scattering intensities. However, if properly
-segmented, high-resolution digital images do provide a possibility to compute
-any correlation function. Experimental measurements using small angle scattering
-(SAS) are traditionally used to evaluate $S_2$, but it is also possible to
-relate scattering intensities to surface correlation functions
-\cite{dietrich1995scattering,ma2018SS}. It would be of great practical
-importance to obtain surface correlation functions from both SAS and imaging
-(focused ion beam milling combined with SEM allows to obtain the finest imaging
-resolutions comparable to SAS and sample CFs from polished surfaces as opposed
-to surface imaging \cite{FIB-SEMpaper}) to estimate coefficients for surface and
-bulk scattering (see Eq.13 in \cite{ma2018SS}). But there is a catch -- SAS
-possesses close to infinite surface resolution as opposed to digital pixelized
-images with inherent segmentation problems due to partial volume effects,
-something we discuss next.
+provide gray-scale images which, as we shall argue later on, need to be
+segmented into constituent phases before CFs computation. It is important to
+note that such gray-scale images do not represent spatial distribution of the
+phases, but, for example, X-ray spatial attenuation or electron back-scattering
+intensities. However, if properly segmented, high-resolution digital images do
+provide a possibility to compute any correlation function. Experimental
+measurements using small angle scattering (SAS) are traditionally used to
+evaluate $S_2$, but it is also possible to relate scattering intensities to
+surface correlation functions \cite{dietrich1995scattering,ma2018SS}. It would
+be of great practical importance to obtain surface correlation functions from
+both SAS and imaging (focused ion beam milling combined with SEM allows to
+obtain the finest imaging resolutions comparable to SAS and sample CFs from
+polished surfaces as opposed to surface imaging \cite{FIB-SEMpaper}) to estimate
+coefficients for surface and bulk scattering (see Eq.13 in \cite{ma2018SS}). But
+there is a catch -- SAS possesses close to infinite surface resolution as
+opposed to digital pixelized images with inherent segmentation problems due to
+partial volume effects, something we discuss next.
 
 Recently, Ma and Torquato \cite{ma2018SS} laid foundation to precise surface
 correlation function computations and showed the usefulness of these CFs
@@ -158,21 +160,38 @@ extensively discussed elsewhere \cite{NNseg}. In other words, simple
 thresholding of the grey-scale image to compute surface functions using the
 approach proposed in \cite{ma2018SS} (their section V.C) may result in incorrect
 surface identification and surface functions are not defined for grey-scale
-images (due to possible sub-resolution porosity). The usage of current
-state-of-the-art segmentation techniques is necessary prior to the conversiton
-to a coarse-grained scalar field. If a binary image (consisting of pores and
-solids) is produced by adequate segmentation technique, we still lack a robust
-and computationally effective procedure to evaluate surface CFs from
-experimental XCT and SEM images of natural heterogeneous materials, such as
-rocks and soils.
+images (due to possible sub-resolution porosity). Thus, we argue, that the usage
+of current state-of-the-art segmentation techniques is necessary prior to the
+conversiton to a coarse-grained scalar field. Moreover, finding an intersection
+between a line segment and the countour is a computationally expensive procedure
+that prevents on-the-fly application of surface functions. If a binary image
+(consisting of pores and solids) is produced by adequate segmentation technique,
+we still lack a robust and computationally effective procedure to evaluate
+surface CFs from experimental XCT and SEM images of natural heterogeneous
+materials, for instance, rocks and soils.
 
-The surface area in \cref{eq:surface} has infinitesimal volume, and its
-location on the digital image is not easy due to the pixelization of the
-interface between the binary phases \cite{ma2018SS}. By adopting the
-$\varepsilon$ = pixel/voxel size one can create a very crude approximation of
-the real interface, but the usage of interfaces between voxels ``as is'' leads
-to known problems in $s$ and surface geometry, in application of 3D imaging for
-geometry and topology analysis \cite{AWR_PNM} or energy minimization problems
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{images/scheme.png}
+  \caption[]{A schematic depiction of a binary porous media (pores are shown in
+    color) with examples of positive events for surface $F_{ss}$, $F_{sv}$ and
+    two-point probability $S_2$ correlation functions. The zoomed in area
+    represents the difference between the true ``continuous'' interface in
+    between pore and solid phases with pixelized ``digital'' interface emerging
+    due to limited resolution of digital images.}
+  \label{fig:scheme}
+\end{figure}
+
+To compute surface functions one first needs to elucidate the interface between
+two phases (we shall consider only pores and solids, but, obviously, the
+computations can be perfromed to multi-phase systems in the similar manner). The
+interface area has infinitesimal volume, but its location on the digital image
+is not easy due to the pixelization of the interface between the binary phases
+\cite{ma2018SS}. By adopting the $\varepsilon$ = pixel/voxel size one can create
+a very crude approximation of the real interface, but the usage of interfaces
+between voxels ``as is'' leads to known problems in surface area and surface
+geometry evaluation, in application of 3D imaging for geometry and topology
+analysis \cite{AWR_PNM} or energy minimization problems
 \cite{frank2018energy}. Another option would be to describe the boundaries
 between voxels with some curves, e.~g., splines. This way it would be possible
 to perform surface CFs sampling by line intersection as described by Ma and
@@ -186,7 +205,7 @@ resolution approaches infinity. But the same is also true for digital
 pixelized/voxelized images. Thus, the options to compute surface correlation
 functions include ``continuous'' approach (such as implemented in
 \cite{ma2018SS}) and ``digital'' approach (similar to computation of $S_2$ from
-digital images) as depicted in \cref{fig:scheme}. We adopt the modified
+digital images) as depicted in \cref{fig:scheme}. Here we propose a modified
 ``digital'' approach that lies in between the exact and pixelized solutions for
 a number of reasons:
 \begin{enumerate}
@@ -197,8 +216,9 @@ a number of reasons:
     as applied to digital pixel/voxel images.
   \item Continuous approach is expensive numerically, as it requires to find the
     intersections between a line and a curve.
-  \item Digital approach allows to utilize linear scan or FFT - the latter is a
-    fastest way to evaluate full CFs map.
+  \item Digital approach allows to utilize linear scan CFs computation or with
+    the usage of the Fast Fourier Transform (FFT) - the latter is a fastest way
+    to evaluate full CFs map and very efficient on modern GPUs.
 \end{enumerate}
 
 In this paper we build upon foundational work of Ma and Torquato \cite{ma2018SS}
@@ -286,25 +306,13 @@ surface correlation functions can be found in comprehensive Torquato's book
 \begin{figure}
   \centering
   \includegraphics[width=0.9\linewidth]{images/Fss.png}
-  \caption[]{Interpretation of $F_{ss}$ as self-intersection of interface.
+  \caption[]{Interpretation of $F_{ss}$ as self-intersection of the interface.
     \textcolor{red}{Torquato described it as ``previous algorithm'', fig.3 - actually not, their case is different a bit in my opinion (Kirill), let's discuss}}
   \label{fig:Fss-explained}
 \end{figure}
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.9\linewidth]{images/scheme.png}
-  \caption[]{A schematic depiction of a binary porous media (pores are shown in
-    color) with examples of positive events for surface $F_{ss}$, $F_{sv}$ and
-    two-point probability $S_2$ correlation functions. The zoomed in area
-    represents the difference between the true ``continuous'' interface in
-    between pore and solid phases with pixelized ``digital'' interface emerging
-    due to limited resolution of digital images.}
-  \label{fig:scheme}
-\end{figure}
-
 \subsection{Analytical solutions}
-For Poisson disks and balls one can derive exact analytical surface-surface and
+For Poisson disks and spheres one can derive exact analytical surface-surface and
 surface-void functions. For overlapping disks with radius $R$ and centers
 generated by Poisson point process with parameter $\lambda$ we have (see the
 derivation of these formulas in \cref{ap:overlapping-disks}):
@@ -317,14 +325,13 @@ derivation of these formulas in \cref{ap:overlapping-disks}):
   F_{ss}(r) &= S_2(r) \left\{
   \begin{array}{ll}
     \frac{(2(B-\pi)R\lambda)^2Ar + 4\sqrt{A}R^2\lambda}{Ar} & \quad r<2R \\
-    (2\pi R\lambda)^2 & \quad \text{otherwise}
+    (2\pi R\lambda)^2 & \quad \text{otherwise},
   \end{array} \right. \label{eq:fss_final}
 \end{align}
-
 where $S_2$ is the regular two-point correlation function and
 \begin{align*}
   A &= 4R^2 - r^2 \\
-  B &= \arccos(\frac{r}{2R})
+  B &= \arccos(\frac{r}{2R}).
 \end{align*}
 
 For 3D balls the relationships are readily available in the literature
@@ -338,7 +345,7 @@ For 3D balls the relationships are readily available in the literature
   F_{ss}(r) &= S_2(r) \left\{
   \begin{array}{ll}
     {(4\pi R^2 \lambda (\frac{1}{2} + \frac{r}{4R}))^2 + \frac{2\pi R^2 \lambda}{r}} & \quad r<2R \\
-    (4\pi R^2 \lambda)^2 & \quad \text{otherwise}
+    (4\pi R^2 \lambda)^2 & \quad \text{otherwise}.
   \end{array} \right.
 \end{align*}
 
@@ -347,16 +354,15 @@ of surface CFs for such systems.
 
 \section{Methodological details}
 \label{sec:details}
-By looking at \cref{eq:twopoint} and \cref{eq:fss}-\cref{eq:fsv} one can observe
+By looking at \cref{eq:twopoint,eq:fss,eq:fsv} one can observe
 some significant similarities between two-point probability and two-point
-surface functions (see \cref{fig:scheme}). They will help us in
-computations. $S_2$ can be viewed as a autocorrelation of the image, i.~e.,
-computing correlations between shifted realization of the image -- something
-that can be used to effectively compute $S_2$ with the help of fast Fourier
-transform (FFT) on modern hardware, especially GPUs. If we apply the same
-analogy to $F_{ss}$, \cref{eq:fss} can be considered as an intersection of the
-interface with itself for all possible shifts. Recall that for the correlation
-length of zero this intersection is technically infinity
+surface functions (see \cref{fig:scheme}). The $S_2$ can be viewed as a
+autocorrelation of the image, i.~e., computing correlations between shifted
+realization of the image -- something that can be used to effectively compute
+$S_2$ with the help of the FFT on modern hardware, especially GPUs. If we apply
+the same analogy to $F_{ss}$, \cref{eq:fss} can be considered as an intersection
+of the interface with itself for all possible shifts. Recall that for the
+correlation length of zero this intersection is technically infinity
 (\cref{sec:definitions}). While surface-void function is well defined at $r=0$,
 it differs from $S_2$ in two significant aspects. First, it resembles two-point
 cross-correlation function (as instead of autocorrelation we have to compute
@@ -366,10 +372,12 @@ correlation between an interface and a void phase and correlation between a void
 phase and an interface. These considerations will be very useful in
 understanding of our computational framework as described in this section.
 
-\subsection{The algorithm}
+\subsection{The general algorithm}
 While we present and compare a bunch of sligtly different methods to evaluate
 surface CFs, they are all based on a single general algorithm for each surface
-function as desribed below.
+function as desribed below ($A$ refers to the input 2D or 3D digital image, $M$
+is the interface between two phases, and $V$ is the image of the void phase as a
+suubset of the input image):
 
 $F_{ss}$ algorithm:
 \begin{algorithmic}[1]
@@ -385,7 +393,7 @@ $F_{ss}$ algorithm:
 
 $F_{sv}$ algorithm:
 \begin{algorithmic}[1]
-  \Procedure{surfsurf}{$A, i$}
+  \Procedure{surfvoid}{$A, i$}
   \State $A' \gets I^{(i)}(A)$
   \Comment{Apply indicator function to $A$.}
   \State $M \gets S(A')$
@@ -397,6 +405,15 @@ $F_{sv}$ algorithm:
   \EndProcedure
 \end{algorithmic}
 
+The algorithm is very general and allows to utilize different technques for
+interface extraction or computation of the correlations, as detailed below.
+
+\subsection{Interface extraction}
+We shall consider two methods for the interface extraction -- the first one is a
+naive approach, while the second is the one we propose to apply for XCT and SEM
+images. Pixels (or voxels) take value between $0$ and $1$: zero value -- inner
+part of phase, and positive value means pixel lies on the interface.
+
 \begin{figure}
   \centering
   \includegraphics[width=0.32\linewidth]{images/original.png}
@@ -405,14 +422,6 @@ $F_{sv}$ algorithm:
   \caption{Steps of $F_{ss}$ algorithm using Sobel kernel}
   \label{fig:stages}
 \end{figure}
-
-
-\textbf{Interface extraction}
-There are several methods for interface extraction.
-We will focus on methods, that construct digital image of the same size.
-Pixels (or voxels) take value between $0$ and $1$:
-zero value -- inner part of phase, and positive value means pixel lies on the
-interface.
 
 \begin{figure}[ht]
   \centering
@@ -449,7 +458,7 @@ belongs to the interface. In a digitized image $\|\nabla A'\|$ can be
 represented as an array of floating point numbers having the same shape as an
 original image $A$.
 
-\textbf{Computing correlation}
+\subsection{Computing correlation}
 We will describe method of computing cross correlation function between two
 images $f$ and $g$: $cross\_correlation(f, g)$. In the case of auto correlation
 function we assume $f = g$. Algorithm is straightforward when boundary
@@ -834,12 +843,14 @@ Our summary says
 
 \section{Acknowledgments}
 This research was supported by the Russian Science Foundation grant
-17-17-01310.
+19-72-10082.
 
 Collaborative effort of the authors within the FaT iMP (Flow and Transport in
 Media with Pores) research group (www.porenetwork.com) and used some of its
-software. We sincerely thank Prof. Salvatore Torquato for directing us to a
-derivation of analytical formulas for 2D Poisson disks.
+software. We thank Prof. Salvatore Torquato for directing us to a
+derivation of analytical formulas for 2D Poisson disks. Special thanks goes to
+our colleague Dr. Dina Gafurova for the 2D and 3D images of real porous media
+used in this study.
 
 \appendix
 \section{Derivation of analytical solutions for 2D Poisson disks}

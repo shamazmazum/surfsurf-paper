@@ -373,6 +373,7 @@ phase and an interface. These considerations will be very useful in
 understanding of our computational framework as described in this section.
 
 \subsection{The general algorithm}
+\label{sec:general}
 While we present and compare a bunch of sligtly different methods to evaluate
 surface CFs, they are all based on a single general algorithm for each surface
 function as desribed below ($A$ refers to the input 2D or 3D digital image, $M$
@@ -384,7 +385,7 @@ $F_{ss}$ algorithm:
   \Procedure{surfsurf}{$A, i$}
   \State $A' \gets I^{(i)}(A)$
   \Comment{Apply indicator function to $A$.}
-  \State $M \gets S(A')$
+  \State $M \gets M(A')$
   \Comment{Extract interface from $A'$.}
   \State \textbf{return} $\star(M, M)$
   \Comment{Autocorrelation of $M$.}
@@ -396,7 +397,7 @@ $F_{sv}$ algorithm:
   \Procedure{surfvoid}{$A, i$}
   \State $A' \gets I^{(i)}(A)$
   \Comment{Apply indicator function to $A$.}
-  \State $M \gets S(A')$
+  \State $M \gets M(A')$
   \Comment{Extract interface from $A'$.}
   \State $V \gets I^{(void)}(A')$
   \Comment{Extract void phase from $A'$.}
@@ -422,7 +423,6 @@ part of phase, and positive value means pixel lies on the interface.
   \caption{Steps of $F_{ss}$ algorithm using Sobel kernel}
   \label{fig:stages}
 \end{figure}
-
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.99\linewidth]{images/dm_sobel.png}
@@ -431,8 +431,6 @@ part of phase, and positive value means pixel lies on the interface.
     bottom).}
   \label{fig:interface-extraction}
 \end{figure}
-
-
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.99\linewidth]{images/direction_and_map.png}
@@ -440,22 +438,49 @@ part of phase, and positive value means pixel lies on the interface.
   \label{fig:direction-vs-map}
 \end{figure}
 
-
 \textit{Distance map}.
-This method creates a binary image. The interface between binary phases is
-represented by a one pixel thick contour (in two-dimensional case) or one voxel
-thick surface (in three-dimensional case). This contour or surface is extracted
-from either solid or void phase with the help of distance map transform with
-subsequent filtering out of pixels/voxels with distances greater than $1$.
+One solution to extract ane interface from an image is to use the distance map
+(also called the distance transform). Distance transform is a mapping from a
+binary image to a scalar field using one of the following functions:
+\begin{align}
+  D_{o}(\mathbf{x}) &= \left\{
+  \begin{array}{ll}
+    0 & \quad \mathbf{x} \in V_{void} \\
+    \min \rho(\mathbf{x}, \mathbf{y}) \ \forall \mathbf{y} \in V_{void} & \quad \text{otherwise}
+  \end{array}
+  \right. \label{eq:dist-outer} \\
+  D_{i}(\mathbf{x}) &= \left\{
+  \begin{array}{ll}
+    0 & \quad \mathbf{x} \not\in V_{void} \\
+    \min \rho(\mathbf{x}, \mathbf{y}) \ \forall \mathbf{y} \not\in V_{void} & \quad \text{otherwise}
+  \end{array}
+  \right. \label{eq:dist-inner}
+\end{align}
+where $V_{void}$ is a set containing elements belonging to the void phase and
+$\rho(\mathbf{x}, \mathbf{y})$ is the Euclidean distance between points
+$\mathbf{x}$ and $\mathbf{y}$. Now $M(\mathbf{x})$ in \cref{eq:interface} may be
+written as follows:
+\begin{equation*}
+  M(\mathbf{x}) = \left\{
+  \begin{array}{ll}
+    1 & 0 < \quad D(\mathbf{x}) \le \sqrt{d} \\
+    0 & \quad \text{otherwise}
+  \end{array}
+  \right.
+\end{equation*}
+where $d$ is dimensionality of the image ($d = 2$ for 2D image, $d = 3$ for 3D
+image) and $D(\mathbf{x})$ is either \cref{eq:dist-outer} or
+\cref{eq:dist-outer}. When $D = D_i$ we call the resulting interface
+``inner interface'' and when $D = D_o$ we call it ``outer interface''.
 
 \textit{Image filtering}.
-This method creates grayscale image. We use Sobel operator to detect edges of
-the image $A'$, later denoted as $\nabla A$: $\nabla A' = S(A')$. We calculate
-$\|\nabla A'\|$ element-wise ($\|\cdot\|$ denotes the usual norm on Euclidean
-space). This norm can be interpreted as the probability that a point in $A$
-belongs to the interface. In a digitized image $\|\nabla A'\|$ can be
-represented as an array of floating point numbers having the same shape as an
-original image $A$.
+This method creates grayscale image of the interface. We use Sobel operator $S$
+to detect edges of the image $A'$, so $M = S$ in algorithms in
+\cref{sec:general}. We calculate $\|S(A')\|$ element-wise ($\|\cdot\|$ denotes
+the usual norm on Euclidean space). This norm can be interpreted as the
+probability that a point in $A$ belongs to the interface. In a digitized image
+$\|S(A')\|$ can be represented as an array of floating point numbers having the
+same shape as an original image $A$.
 
 \subsection{Computing correlation}
 We will describe method of computing cross correlation function between two
@@ -498,9 +523,9 @@ periodic. For non-periodic boundary conditions we will need a minor change.
   \EndProcedure
 \end{algorithmic}
 
-All methods and their consecutive stages are shown in \cref{fig:stages}. They
-are also a part of \code{CorrelationFunctions.jl} package \cite{CFsjlpaper} for
-Julia programming language that allows to compute all classical CFs described in
+Consecutive stages of our method are shown in \cref{fig:stages}. It is also a
+part of \code{CorrelationFunctions.jl} package \cite{CFsjlpaper} for Julia
+programming language that allows to compute all classical CFs described in
 Torquato’s book \cite{Torquato_book} from digital images.
 
 \section{Application to synthetic and real binary 2D/3D images}
@@ -510,11 +535,11 @@ Torquato’s book \cite{Torquato_book} from digital images.
 To evaluate the accuracy of surface CFs computations the most straightforward
 way is to compare them against analytical solutions. We use well-known
 analytical soulution for overlapping disks and balls with fixed radius $R$ and
-centers generated by Poisson point process. Starting with an image with
-resolution of $4096 \times 4096$ pixels, we then downscale it by 4, 16, and 64
-times with the help of bicubic interpolation \cite{ledesma2018effect}. We show
-that calculated correlation functions approach theoretical values when the
-resolution is high enough.
+centers generated by Poisson point process with parameter $\lambda$. Starting
+with an image with resolution of $4096 \times 4096$ pixels, we then downscale it
+by 4, 16, and 64 times with the help of bicubic interpolation
+\cite{ledesma2018effect}. We show that calculated correlation functions approach
+theoretical values when the resolution is high enough.
 
 It is easy to show that assuming $a > 0$:
 \begin{align}
@@ -646,14 +671,12 @@ are shown on \cref{fig:resized-cfs}.
 \end{figure*}
 
 \subsection{The choice of method to extract the interface (gradient)}
-
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.99\linewidth]{images/sobel-vs-distance-map.png}
   \caption{Comparison of Sobel filter and distance map on high-resolution image (60 pixels per disk radius)}
   \label{fig:sobel-vs-distance-map}
 \end{figure}
-
 
 \begin{figure}[ht]
   \centering
@@ -662,13 +685,21 @@ are shown on \cref{fig:resized-cfs}.
   \label{fig:kernels}
 \end{figure}
 
-As \cref{fig:interface-extraction} shows, both methods -- distance map and image filtering --
-have an error compared to the analytical solution. But the image used for
-\cref{fig:interface-extraction} is low resolution (about 10 pixels per
-radius). What if we increase the resolution? \cref{fig:sobel-vs-distance-map}
-shows a different picture: the image filtering method achieved an analytical
-solution  while the distance map failed to do so. This is why we advocate the
-use of image filtering to calculate surface features.
+Surface-surface function for overlapping disks
+($R = 10,\ \lambda = 2 \cdot 10^{-3}$ on image with dimensions $1000 \times 1000$)
+computed with different methods of interface extraction is shown on
+\cref{fig:interface-extraction}. These methods include image filtering with
+Sobel operator and interface extraction with distance map. When using distance
+map both outer (\cref{eq:dist-outer}) and inner (\cref{eq:dist-inner})
+interfaces are used to compute the correlation function. An average over the
+last two functions is also shown. As you can see both methods -- distance map
+and image filtering -- have an error compared to the analytical solution. If we
+increase the radius of disks and the image resolution
+($R = 70,\ \lambda = 3 \cdot 10^{-6}$ on image with dimensions $5000 \times 5000$)
+we get the result as on \cref{fig:sobel-vs-distance-map}. In this case the image
+filtering method achieved an analytical solution  while the distance map failed
+to do so. This is why we advocate the use of image filtering to calculate
+surface features.
 
 There are many different kernels for evaluating gradients. We investigated:
 Sobel, Ando, Sharr, Bickley and Prewitt filters. Their performance is almost the

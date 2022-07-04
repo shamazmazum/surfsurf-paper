@@ -120,7 +120,7 @@ function produce_map_vs_dir_plot!()
     plot(cf[1,:], linewidth = 2.0)
     xlabel(raw"$r$")
     ylabel(raw"$F_{ss}(r)$")
-    legend(["Theory", "Map average", "One direction"])
+    legend(["Theory", "Map average", "Single direction"])
     xlim([0, 40])
     savefig("surfsurf-paper/images/direction_and_map.png")
 end

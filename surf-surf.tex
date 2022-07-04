@@ -436,18 +436,17 @@ part of phase, and positive value means pixel lies on the interface.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.99\linewidth]{images/direction_and_map.png}
-  \caption{One direction $F_{ss}$ vs map average comparison}
+  \caption{Single direction $F_{ss}$ vs map average comparison}
   \label{fig:direction-vs-map}
 \end{figure}
 
 
 \textit{Distance map}.
-This method creates binary image. 
-The interface between binary phases is represented by a one
-pixel thick contour (in two-dimensional case) or one voxel thick surface (in
-three-dimensional case). This contour or surface is extracted from either solid
-or void phase with the help of distance map transform with subsequent filtering
-out of pixels/voxels with distances greater than $1$.
+This method creates a binary image. The interface between binary phases is
+represented by a one pixel thick contour (in two-dimensional case) or one voxel
+thick surface (in three-dimensional case). This contour or surface is extracted
+from either solid or void phase with the help of distance map transform with
+subsequent filtering out of pixels/voxels with distances greater than $1$.
 
 \textit{Image filtering}.
 This method creates grayscale image. We use Sobel operator to detect edges of

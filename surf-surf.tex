@@ -896,32 +896,5 @@ Materials. It uses \code{CorrelationFunctions.jl} package developed by our group
 \cite{CFsjlpaper} that allows efficient computation of surface and other
 correlation functions using both CPU and GPU architectures.
 
-\section{Surface-surface correlation function for one disk}
-The analytical representation of the surface-surface correlation function for
-one disk is as follows:
-\begin{equation*}
-  F_{ss}(r) = \lim_{a_1, a_2 \rightarrow R} \frac{\partial}{\partial a_1}
-  \frac{\partial}{\partial a_2} S_{tot}(r, a_1, a_2)
-\end{equation*}
-Following the same steps as in \cref{ap:overlapping-disks} we get a simple
-formula:
-\begin{equation*}
-  F_{ss}(r,R) = \left\{
-  \begin{array}{ll}
-    \frac{4R^2}{r\sqrt{4R^2-r^2}} & \quad r < 2R \\
-    0 & \quad \text{otherwise}
-  \end{array} \right.
-\end{equation*}
-The resulting expression depends only on $t = r / 2R$:
-\begin{equation*}
-  F_{ss}(t) = \left\{
-  \begin{array}{ll}
-    \frac{1}{t\sqrt{1-t^2}} & \quad t < 1 \\
-    0 & \quad \text{otherwise}
-  \end{array} \right.
-\end{equation*}
-You can see that as $t$ tends to $0$ on the right or $1$ on the left,
-$F_{ss}(t)$ tends to infinity.
-
 \bibliography{apssamp}
 \end{document}

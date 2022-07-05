@@ -427,8 +427,8 @@ part of phase, and positive value means pixel lies on the interface.
   \centering
   \includegraphics[width=0.99\linewidth]{images/dm_sobel.png}
   \caption{Surface-surface correlation function calculated with different
-    interface extraction methods (Sobel on the top, distance map on the
-    bottom).}
+    interface extraction methods (Sobel to the left, distance map to the
+    right).}
   \label{fig:interface-extraction}
 \end{figure}
 \begin{figure}[ht]
@@ -693,8 +693,9 @@ Sobel operator and interface extraction with distance map. When using distance
 map both outer (\cref{eq:dist-outer}) and inner (\cref{eq:dist-inner})
 interfaces are used to compute the correlation function. An average over the
 last two functions is also shown. As you can see both methods -- distance map
-and image filtering -- have an error compared to the analytical solution. If we
-increase the radius of disks and the image resolution
+and image filtering -- have an error compared to the analytical
+solution. \textcolor{red}{How is that?? In my opinion Sobel is pretty close to
+  the theory.} If we increase the radius of disks and the image resolution
 ($R = 70,\ \lambda = 3 \cdot 10^{-6}$ on image with dimensions $5000 \times 5000$)
 we get the result as on \cref{fig:sobel-vs-distance-map}. In this case the image
 filtering method achieved an analytical solution  while the distance map failed

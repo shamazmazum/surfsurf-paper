@@ -94,6 +94,7 @@ function produce_fucking_graphics!()
             "Distance transform (mean)",
             "Theory"]; loc = 2)
     xlim([0, 40])
+    ylim([0, 0.03])
     savefig("surfsurf-paper/images/Fss_mean_dir.png")
     save("surfsurf-paper/images/distance_map.png", img[1:100, 1:100] |> distance_map_edge)
     save("surfsurf-paper/images/sobel.png", img[1:100, 1:100] |> gradient)
@@ -172,9 +173,10 @@ function produce_another_comparison!()
     img   = gendisks(5000, 70, 3e-6)
     th(x) = ss_theory(x, 70, 3e-6)
 
-    function plot_it!(fn)
-        interface = fn(img)
-        cf = interface |> autocorr |> reflect
+    function plot_it!(fns)
+        interfaces = map(fn -> fn(img), fns)
+        cfss = interfaces .|> autocorr .|> reflect
+        cf  = reduce(+, cfss) / length(cfss)
         xs, ys = average(cf)
         plot(xs, ys, linewidth = 2.0)
         return xs
@@ -182,12 +184,19 @@ function produce_another_comparison!()
 
     figure(figsize = (10, 8), dpi = 300)
     rc("font", size = 18)
-    xs = plot_it!(gradient)
-    xs = plot_it!(distance_map_edge)
+    xs = plot_it!([gradient])
+    xs = plot_it!([distance_map_edge])
+    xs = plot_it!([distance_map_edge ∘ (.!)])
+    xs = plot_it!([distance_map_edge,
+                   distance_map_edge ∘ (.!)])
     plot(xs, th.(xs), linewidth = 2.0)
     xlabel(raw"$r$")
     ylabel(raw"$F_{ss}(r)$")
-    legend(["Sobel", "Distance map", "Theory"])
+    legend(["Sobel",
+            "Distance map (outer)",
+            "Distance map (inner)",
+            "Distance map (mean)",
+            "Theory"])
     xlim([0, 400])
     ylim([0, 0.00004])
     savefig("surfsurf-paper/images/sobel-vs-distance-map.png")

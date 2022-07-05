@@ -11,7 +11,8 @@ include("spheres.jl")
 
 export produce_plots_with_disks!,
     produce_plots_with_noise!,
-    produce_disks!
+    produce_disks!,
+    produce_noise!
 
 function produce_disks!()
     Random.seed!(12342)
@@ -20,6 +21,12 @@ function produce_disks!()
         img = gendisks1(n, centers, 0.015)
         save("surfsurf-paper/images/disks-0015-5e-5-$(n).png", img)
     end
+end
+
+function produce_noise!()
+    fn(x, y, n) = value_noise(15x/n, 15y/n, 0, 3, 43432) < 0.5
+    img1024 = [fn(x, y, 1024) for x in 1:1024, y in 1:1024]
+    save("surfsurf-paper/images/noise.png", Gray.(img1024))
 end
 
 function produce_plots_with_disks!()
@@ -69,7 +76,7 @@ function produce_plots_with_disks!()
 end
 
 function produce_plots_with_noise!()
-    fn(x, y, n) = value_noise(20x/n, 20y/n, 0, 3, 43432) < 0.5
+    fn(x, y, n) = value_noise(15x/n, 15y/n, 0, 3, 43432) < 0.5
 
     img64   = [fn(x, y, 64)   for x in 1:64,   y in 1:64]
     img256  = [fn(x, y, 256)  for x in 1:256,  y in 1:256]
@@ -110,6 +117,8 @@ function produce_plots_with_noise!()
     ylabel(raw"$aF_{sv}(ar)$")
     legend(["64x64", "256x256", "1024x1024", "4096x4096"])
     savefig("surfsurf-paper/images/plot-sv-noise.png")
+
+    save("surfsurf-paper/images/noise.png", Gray.(img1024))
 end
 
 end

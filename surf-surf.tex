@@ -356,7 +356,7 @@ of surface CFs for such systems.
 \label{sec:details}
 By looking at \cref{eq:twopoint,eq:fss,eq:fsv} one can observe
 some significant similarities between two-point probability and two-point
-surface functions (see \cref{fig:scheme}). The $S_2$ can be viewed as a
+surface functions (see \cref{fig:scheme}). $S_2$ can be viewed as a
 autocorrelation of the image, i.~e., computing correlations between shifted
 realization of the image -- something that can be used to effectively compute
 $S_2$ with the help of the FFT on modern hardware, especially GPUs. If we apply
@@ -364,9 +364,9 @@ the same analogy to $F_{ss}$, \cref{eq:fss} can be considered as an intersection
 of the interface with itself for all possible shifts. Recall that for the
 correlation length of zero this intersection is technically infinity
 (\cref{sec:definitions}). While surface-void function is well defined at $r=0$,
-it differs from $S_2$ in two significant aspects. First, it resembles two-point
+it differs from $S_2$ in two significant aspects. Firstly, it resembles two-point
 cross-correlation function (as instead of autocorrelation we have to compute
-correlation between the interface and the void phase). Second, such
+correlation between the interface and the void phase). Secondly, such
 cross-correlation is not commutative, so we get two surface-void functions:
 correlation between an interface and a void phase and correlation between a void
 phase and an interface. These considerations will be very useful in
@@ -377,8 +377,7 @@ understanding of our computational framework as described in this section.
 While we present and compare a bunch of sligtly different methods to evaluate
 surface CFs, they are all based on a single general algorithm for each surface
 function as desribed below ($A$ refers to the input 2D or 3D digital image, $M$
-is the interface between two phases, and $V$ is the image of the void phase as a
-suubset of the input image):
+is the interface between two phases, and $V$ is the image of the void phase only):
 
 $F_{ss}$ algorithm:
 \begin{algorithmic}[1]
@@ -407,13 +406,17 @@ $F_{sv}$ algorithm:
 \end{algorithmic}
 
 The algorithm is very general and allows to utilize different technques for
-interface extraction or computation of the correlations, as detailed below.
+interface extraction or computation of the correlations, as detailed below. The
+cross-correlation function is introduced in \cref{sec:cross-comp}. Consecutive
+stages of our method are shown in \cref{fig:stages}. It is also a part of
+\code{CorrelationFunctions.jl} package \cite{CFsjlpaper} for Julia programming
+language that allows to compute all classical CFs described in Torquato’s book
+\cite{Torquato_book} from digital images.
 
 \subsection{Interface extraction}
 We shall consider two methods for the interface extraction -- the first one is a
 naive approach, while the second is the one we propose to apply for XCT and SEM
-images. Pixels (or voxels) take value between $0$ and $1$: zero value -- inner
-part of phase, and positive value means pixel lies on the interface.
+images.
 
 \begin{figure}
   \centering
@@ -439,9 +442,10 @@ part of phase, and positive value means pixel lies on the interface.
 \end{figure}
 
 \textit{Distance map}.
-One solution to extract ane interface from an image is to use the distance map
-(also called the distance transform). Distance transform is a mapping from a
-binary image to a scalar field using one of the following functions:
+One solution to extract an interface between phases from an image is to use the
+distance map (also called the distance transform). Distance transform is a
+mapping from a binary image to a scalar field using one of the following
+functions:
 \begin{align}
   D_{o}(\mathbf{x}) &= \left\{
   \begin{array}{ll}
@@ -470,23 +474,25 @@ written as follows:
 \end{equation*}
 where $d$ is dimensionality of the image ($d = 2$ for 2D image, $d = 3$ for 3D
 image) and $D(\mathbf{x})$ is either \cref{eq:dist-outer} or
-\cref{eq:dist-outer}. When $D = D_i$ we call the resulting interface
-``inner interface'' and when $D = D_o$ we call it ``outer interface''.
+\cref{eq:dist-inner}. When $D = D_i$ we call the resulting interface
+``the inner interface'' and when $D = D_o$ we call it ``the outer interface''.
 
 \textit{Image filtering}.
 This method creates grayscale image of the interface. We use Sobel operator $S$
-to detect edges of the image $A'$, so $M = S$ in algorithms in
-\cref{sec:general}. We calculate $\|S(A')\|$ element-wise ($\|\cdot\|$ denotes
-the usual norm on Euclidean space). This norm can be interpreted as the
-probability that a point in $A$ belongs to the interface. In a digitized image
-$\|S(A')\|$ can be represented as an array of floating point numbers having the
-same shape as an original image $A$.
+to detect edges of the image, so $M = S$ in algorithms in \cref{sec:general}. We
+calculate $\|S(A')\|$ (recollect that $A' = I^{(void)}(A)$ where $A$ is the
+input image) element-wise ($\|\cdot\|$ denotes the usual norm on Euclidean
+space). This norm can be interpreted as the probability that a point in $A$
+belongs to the interface. In a digitized image $\|S(A')\|$ can be represented as
+an array of floating point numbers having the same shape as an original image
+$A$.
 
 \subsection{Computing correlation}
-We will describe method of computing cross correlation function between two
-images $f$ and $g$: $\star (f, g)$. In the case of auto correlation function we
-assume $f = g$. Algorithm is straightforward when boundary conditions are
-periodic. For non-periodic boundary conditions we will need a minor change.
+\label{sec:cross-comp}
+We will describe method of computing cross-correlation function between two
+images $f$ and $g$. In the case of autocorrelation function we assume $f =
+g$. Algorithm is straightforward when boundary conditions are periodic. For
+non-periodic boundary conditions we will need a minor change.
 
 \textit{Periodic boundary condition}
 \begin{algorithmic}[1]
@@ -522,11 +528,6 @@ periodic. For non-periodic boundary conditions we will need a minor change.
   \State \textbf{return} $cc$.
   \EndProcedure
 \end{algorithmic}
-
-Consecutive stages of our method are shown in \cref{fig:stages}. It is also a
-part of \code{CorrelationFunctions.jl} package \cite{CFsjlpaper} for Julia
-programming language that allows to compute all classical CFs described in
-Torquato’s book \cite{Torquato_book} from digital images.
 
 \section{Application to synthetic and real binary 2D/3D images}
 \label{sec:results}
@@ -584,23 +585,47 @@ assume that with increasing spatial resolution the influence of this thickness
 will diminish. This is exactly what we observe on \cref{fig:scaling} where
 increasing disk discretization leads to convergence with analytical solution;
 the accuracy of the computed CFs is almost perfect for discretization of about
-4096 pixels for each disk. A natural question arises: ``Is there a criterion of
+12000 pixels for each disk. A natural question arises: ``Is there a criterion of
 image quality (resolution) that allows to predict the quality of surface CFs
 evaluation from digital images?''. Turns out there is a possibility to establish
 such empirical criterion based on spectral analysis of input images and
 \cref{sec:crit} provides necessary details.
 
+\subsection{Convergence of correlation functions with increase of resolution}
+\label{sec:value-noise}
 Now consider a situation when an image is obtained by taking samples of a function
 $f: \mathbb{R}^n \rightarrow \left\{0, 1\right\}$. The samples are taken from a
-regular grid which covers the range $[0, 1]^n$  with interval $\Delta$ between
-samples. The resulting image has then $1/\Delta + 1$ pixels in each
-dimension. An example of $f$ is a thresholded value noise function, and an
-example of image generated by sampling this function is on
-\cref{fig:noise}. Correlation functions calculated for the noise at different
-resolutions are on \cref{fig:scaling-noise}. If we calculate surface-surface and
-surface-void correlation functions for these images and scale them as described
-above, we will converge to some ``true'' correlation functions for continuous
-function $f$.
+regulary spaced lattice which covers the range $[0, L]^n$  with interval
+$\Delta$ between samples. The resulting image has then $L/\Delta + 1$ pixels in
+each dimension. We will show empirically that for any sequence $\Delta_k$ so
+that $\Delta_{k+1} < \Delta_k$ and $\Delta_k \rightarrow 0$ sequences
+$F_{ss}^{\Delta_k}(r)$ and $F_{sv}^{\Delta_k}(r)$ computed for images with
+lattice interval $\Delta_k$ converge to some limit functions $F_{ss}(r)$ and
+$F_{sv}(r)$.
+
+An example of $f$ is a thresholded value noise function. A value noise is a
+procedurally generated noise which in one-dimensional case works as
+follows. Firstly define a family of regulary spaced lattices $U_k$ with points
+in coordinates $2^{-k}n,\ n \in \mathbb{Z}$. Each point of a lattice is assigned
+a randomly taken value in the range $[0, 1]$. Then for each $U_k$ define a
+function $g_k(x): \mathbb{R} \rightarrow \mathbb{R}$ which interpolates random
+values in $U_k$ lineary. A value noise function is defined as follows:
+\begin{align*}
+  g(x; n) &= \frac{\sum\limits_{k=0}^{n-1} 2^{-k}g_k(x)}{\sum\limits_{k=0}^{n-1}
+    2^{-k}} \\
+  &= \frac{2^n}{2^{n+1}-2} \sum\limits_{k=0}^{n-1} 2^{-k}g_k(x)
+\end{align*}
+Here $n$ is a parameter called the number of octaves. A thesholded noise is then
+\begin{align*}
+  f(x; n) = \Theta(g(x; n) - 1/2)
+\end{align*}
+where $\Theta(x)$ is the Heaviside step function. A generalization for higher
+dimensionality is constructed using the sample principle. An example of
+thesholded value noise with three octaves is on \cref{fig:noise}. Correlation
+functions calculated for the noise with $n = 3$ at different resolutions are on
+\cref{fig:scaling-noise}. If we calculate surface-surface and surface-void
+correlation functions for these images and scale them as described above, we
+will converge to some ``true'' correlation functions for continuous function $f$.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.9\linewidth]{images/noise.png}

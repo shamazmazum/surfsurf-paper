@@ -6,6 +6,7 @@ using OffsetArrays
 using Statistics
 using Random
 using PyPlot
+using CorrelationFunctions
 
 include("spheres.jl")
 
@@ -14,10 +15,18 @@ export gradient, distance_map_edge, average,
     produce_fucking_graphics!,
     produce_map_vs_dir_plot!,
     produce_kernel_plot!,
-    produce_another_comparison!
+    produce_another_comparison!,
+    produce_maps!,
+    produce_fucking_plots!
 
-autocorr(arr :: AbstractArray) =
-    (arr |> fft .|> abs2 |> ifft |> real) / length(arr)
+function crosscorr(x :: AbstractArray, y :: AbstractArray)
+    fx = fft(x)
+    fy = fft(y)
+    fc = @. fx * conj(fy)
+    return (fc |> ifft |> real) / length(x)
+end
+
+autocorr(arr :: AbstractArray) = crosscorr(arr, arr)
 
 function array_with_zero_based_indices(array :: Array)
     ax = map(x -> x .- 1, axes(array))
@@ -63,6 +72,59 @@ function average(arr :: AbstractArray)
     return xs, ys
 end
 
+function produce_maps!()
+    Random.seed!(1)
+    img = gendisks(1000, 10, 0.002)
+
+    iface = img |> gradient
+    void  = img .== 0
+    ss    = iface |> autocorr |> reflect
+    sv    = crosscorr(iface, void) |> reflect
+
+    figure(figsize = (6, 6), dpi = 300)
+    axis("off")
+    s = CartesianIndex(size(ss) .÷ 2)
+    w = CartesianIndex(50, 50)
+    imshow(ss[(s - w):(s + w)])
+    savefig("surfsurf-paper/images/Fss_map.png";
+            bbox_inches = "tight",
+            pad_inches = 0)
+
+    figure(figsize = (6, 6), dpi = 300)
+    axis("off")
+    s = CartesianIndex(size(sv) .÷ 2)
+    w = CartesianIndex(50, 50)
+    imshow(sv[(s - w):(s + w)])
+    savefig("surfsurf-paper/images/Fsv_map.png";
+            bbox_inches = "tight",
+            pad_inches = 0)
+end
+
+function produce_fucking_plots!()
+    Random.seed!(1)
+    img = gendisks(1000, 10, 0.002)
+
+    ss = Directional.surfsurf(img, false; periodic = true) |> mean
+    sv = Directional.surfvoid(img, false; periodic = true) |> mean
+
+    figure(figsize = (5, 4), dpi = 300)
+    rc("font", size = 6)
+    plot(ss)
+    xlabel(raw"$r$")
+    ylabel(raw"$F_{ss}(r)$")
+    xlim([0, 100])
+    ylim([0, 0.03])
+    savefig("surfsurf-paper/images/demo-plot-ss.png")
+
+    figure(figsize = (5, 4), dpi = 300)
+    rc("font", size = 6)
+    plot(sv)
+    xlabel(raw"$r$")
+    ylabel(raw"$F_{sv}(r)$")
+    xlim([0, 100])
+    savefig("surfsurf-paper/images/demo-plot-sv.png")
+end
+
 function produce_fucking_graphics!()
     Random.seed!(1)
     img = gendisks(1000, 10, 0.002)
@@ -98,20 +160,6 @@ function produce_fucking_graphics!()
     savefig("surfsurf-paper/images/Fss_mean_dir.png")
     save("surfsurf-paper/images/distance_map.png", img[1:100, 1:100] |> distance_map_edge)
     save("surfsurf-paper/images/sobel.png", img[1:100, 1:100] |> gradient)
-
-    function plot_it2!(cf, name)
-        figure(figsize = (6, 6), dpi = 300)
-        axis("off")
-        s = CartesianIndex(size(cf) .÷ 2)
-        w = CartesianIndex(50, 50)
-        imshow(cf[(s - w):(s + w)])
-        savefig("surfsurf-paper/images/Fss_map_$(name).png";
-                bbox_inches = "tight",
-                pad_inches = 0)
-    end
-
-    plot_it2!(cfs, "sobel")
-    plot_it2!(cfd, "dm")
 end
 
 function produce_map_vs_dir_plot!()

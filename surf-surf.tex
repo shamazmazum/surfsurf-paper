@@ -592,22 +592,30 @@ $F_{ss}(ar)$ and $F_{sv}(ar)$ for each original and rescaled image and multiply
 it by coefficient $a^2 = (L_{scaled}/L_{orig})^2$ and $a = L_{scaled}/L_{orig}$
 respectively, where $L_{scaled}$ is the side of the rescaled image and
 $L_{orig}$ is the side of the original image. The resulting scaled surface CFs
-are shown in \cref{fig:scaling}.
+are shown in \cref{fig:scaling-alltogether}.
 
 \begin{figure*}[ht]
   \centering
-  \subfigure[Surface-surface]{
+  \subfigure[Surface-surface, disks]{
     \includegraphics[width=0.475\linewidth]{images/plot-ss-balls.png}
     \label{fig:fss-scaling}}
   \hfill
-  \subfigure[Surface-void]{
+  \subfigure[Surface-void, disks]{
     \includegraphics[width=0.475\linewidth]{images/plot-sv-balls.png}
     \label{fig:fsv-scaling}}
-    \caption[]{The comparison of analytical and computed surface correlation
-      functions for the Poisson disks for the original $4096 \times 4096$ pixels
-      image. Computed CFs were obtained for different image resolutions as shown
-      in the legend.}
-    \label{fig:scaling}
+  \vskip\baselineskip
+  \subfigure[Surface-surface, value noise]{
+    \includegraphics[width=0.475\linewidth]{images/plot-ss-noise.png}
+    \label{fig:fss-scaling-noise}}
+  \hfill
+  \subfigure[Surface-void, value-noise]{
+    \includegraphics[width=0.475\linewidth]{images/plot-sv-noise.png}
+    \label{fig:fsv-scaling-noise}}
+  \caption[]{Surface-surface and surface-void correlation functions for
+    images of overlapping disks and thresholded value noise obtained with
+    different resolution. Theoretical results are also shown for overlapping
+    disks.}
+  \label{fig:scaling-alltogether}
 \end{figure*}
 
 We can observe two effects when downscaling the original image. The
@@ -620,14 +628,14 @@ general connected to the fact that the interface in digital images has
 non-negligible thickness -- i.~e. the difference between real ``continuous''
 interface versus ``digital'' interface (\cref{fig:scheme}). It is logical to
 assume that with increasing spatial resolution the influence of this thickness
-will diminish. This is exactly what we observe on \cref{fig:scaling} where
-increasing disk discretization leads to convergence with analytical solution;
-the accuracy of the computed CFs is almost perfect for discretization of about
-12000 pixels for each disk. A natural question arises: ``Is there a criterion of
-image quality (resolution) that allows to predict the quality of surface CFs
-evaluation from digital images?''. Turns out there is a possibility to establish
-such empirical criterion based on spectral analysis of input images and
-\cref{sec:crit} provides necessary details.
+will diminish. This is exactly what we observe on \cref{fig:scaling-alltogether}
+where increasing disk discretization leads to convergence with analytical
+solution; the accuracy of the computed CFs is almost perfect for discretization
+of about 12000 pixels for each disk. A natural question arises: ``Is there a
+criterion of image quality (resolution) that allows to predict the quality of
+surface CFs evaluation from digital images?''. Turns out there is a possibility
+to establish such empirical criterion based on spectral analysis of input images
+and \cref{sec:crit} provides necessary details.
 
 \subsection{Convergence of correlation functions with increase of resolution}
 \label{sec:value-noise}
@@ -661,25 +669,12 @@ where $\Theta(x)$ is the Heaviside step function. A generalization for higher
 dimensionality is constructed using the sample principle. An example of
 thesholded value noise with three octaves is on
 \cref{fig:disks-noise}. Correlation functions calculated for the noise with
-$n = 3$ at different resolutions are on \cref{fig:scaling-noise}. If we
+$n = 3$ at different resolutions are on \cref{fig:scaling-alltogether}. If we
 calculate surface-surface and surface-void correlation functions for these
 images and scale them as described above, we will converge to some ``true''
 correlation functions for continuous function $f$.
 
-\begin{figure*}[ht]
-  \centering
-  \subfigure[Surface-surface]{
-    \includegraphics[width=0.475\linewidth]{images/plot-ss-noise.png}
-    \label{fig:fss-scaling-noise}}
-  \hfill
-  \subfigure[Surface-void]{
-    \includegraphics[width=0.475\linewidth]{images/plot-sv-noise.png}
-    \label{fig:fsv-scaling-noise}}
-    \caption[]{Surface-surface and surface-void correlation functions for
-      thresholded value noise function sampled with different resolutions.}
-    \label{fig:scaling-noise}
-\end{figure*}
-
+\subsection{Effects of image upscaling}
 You can use resizing to obtain images of higher dimensionality and calculate
 surface functions for resized images to get more accurate result. Because a
 resized image becomes grayscale we use the following function as an indicator
@@ -803,17 +798,18 @@ whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.07$ as
 a strict criterion which is based on results of
 \cref{sec:comparison}. For overlapping disks we immediately observe that the
 image with resolution $4096 \times 4096$ has surface CFs very close to
-analytical solution and satisfy our $C_{0.5}$ criterion perfectly. The other
-three downscaled images fail to satisfy the criterion. The first two images of
-value noise (with resolution $4096 \times 4096$ and $1024 \times 1024$) pass our
-criterion and the other two do not pass, which is in agreement with
-\cref{fig:scaling-noise} (correlation functions converge at resolution about
+analytical solution (\cref{fig:fss-scaling} - \cref{fig:fsv-scaling}) and
+satisfy our $C_{0.5}$ criterion perfectly. The other three downscaled images
+fail to satisfy the criterion. The first two images of value noise (with
+resolution $4096 \times 4096$ and $1024 \times 1024$) pass our criterion and the
+other two do not pass, which is in agreement with \cref{fig:fss-scaling-noise} -
+\cref{fig:fsv-scaling-noise} (correlation functions converge at resolution about
 $1024 \times 1024$).
 
-After looking at \cref{fig:scaling} and \cref{fig:disks-noise} we can claim that
-the criterion correctly selects images which are suitable for calculation of the
-correlation functions. The criterion $C_{0.5}$ decays fast with the decline in
-image resolution as shown in \cref{fig:crit-plot}.
+After looking at \cref{fig:disks-noise} and \cref{fig:scaling-alltogether} we
+can claim that the criterion correctly selects images which are suitable for
+calculation of the correlation functions. The criterion $C_{0.5}$ decays fast
+with the decline in image resolution as shown in \cref{fig:crit-plot}.
 
 \begin{figure}[ht]
   \centering

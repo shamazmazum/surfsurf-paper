@@ -544,19 +544,19 @@ correlation functions approach theoretical values when the resolution is high
 enough.
 \begin{figure*}[t]
   \centering
-  \subfigure[Resolution $4096 \times 4096$, value noise]{
+  \subfigure[Resolution $4096 \times 4096$, value noise, $C_{0.5} = 0.9692$]{
     \includegraphics[width=0.22\linewidth]{images/noise-4096.png}
     \label{fig:noise-4096}}
   \hfill
-  \subfigure[Resolution $1024 \times 1024$, value noise]{
+  \subfigure[Resolution $1024 \times 1024$, value noise, $C_{0.5} = 0.9386$]{
     \includegraphics[width=0.22\linewidth]{images/noise-1024.png}
     \label{fig:noise-1024}}
   \hfill
-  \subfigure[Resolution $256 \times 256$, value noise]{
+  \subfigure[Resolution $256 \times 256$, value noise, $C_{0.5} = 0.8770$]{
     \includegraphics[width=0.22\linewidth]{images/noise-256.png}
     \label{fig:noise-256}}
   \hfill
-  \subfigure[Resolution $64 \times 64$, value noise]{
+  \subfigure[Resolution $64 \times 64$, value noise, $C_{0.5} = 0.7524$]{
     \includegraphics[width=0.22\linewidth]{images/noise-64.png}
     \label{fig:noise-64}}
   \vskip\baselineskip
@@ -801,16 +801,19 @@ for some $a$ and $\xi$. This criterion tells us exactly how much energy in
 $f_0(x)$ is concentrated in a low frequency range $[0, af]$ compared to the
 whole range $[0, f]$. In our work we propose $a = 0.5$ and $\xi = 0.07$ as
 a strict criterion which is based on results of
-\cref{sec:comparison}. \textcolor{red}{FIXME: Update links and text.} For the
-images of Poisson disks from \cref{fig:scaling} their discretizations and
-$C_{0.5}$ are shown in \cref{fig:disks-noise}. We immediately observe that the
+\cref{sec:comparison}. For overlapping disks we immediately observe that the
 image with resolution $4096 \times 4096$ has surface CFs very close to
-analytical solution and satisfy our  $C_{0.5}$ criterion perfectly. The other
-three downscaled images fail to satisfy the criterion. After looking at
-\cref{fig:scaling} and \cref{fig:disks-noise} we can claim that the criterion
-correctly selects images which are suitable for calculation of the correlation
-functions. The criterion $C_{0.5}$ decays fast with the decline in image
-resolution as shown in \cref{fig:crit-plot}.
+analytical solution and satisfy our $C_{0.5}$ criterion perfectly. The other
+three downscaled images fail to satisfy the criterion. The first two images of
+value noise (with resolution $4096 \times 4096$ and $1024 \times 1024$) pass our
+criterion and the other two do not pass, which is in agreement with
+\cref{fig:scaling-noise} (correlation functions converge at resolution about
+$1024 \times 1024$).
+
+After looking at \cref{fig:scaling} and \cref{fig:disks-noise} we can claim that
+the criterion correctly selects images which are suitable for calculation of the
+correlation functions. The criterion $C_{0.5}$ decays fast with the decline in
+image resolution as shown in \cref{fig:crit-plot}.
 
 \begin{figure}[ht]
   \centering

@@ -625,14 +625,29 @@ thesholded value noise with three octaves is on \cref{fig:noise}. Correlation
 functions calculated for the noise with $n = 3$ at different resolutions are on
 \cref{fig:scaling-noise}. If we calculate surface-surface and surface-void
 correlation functions for these images and scale them as described above, we
-will converge to some ``true'' correlation functions for continuous function $f$.
-\begin{figure}[ht]
+will converge to some ``true'' correlation functions for continuous function
+$f$.
+\begin{figure*}[t]
   \centering
-  \includegraphics[width=0.9\linewidth]{images/noise.png}
-  \caption[]{Example of thresholded value noise used for study of sampling
-    effects.}
+  \subfigure[Resolution $4096 \times 4096$]{
+    \includegraphics[width=0.475\linewidth]{images/noise-4096.png}
+    \label{fig:noise-4096}}
+  \hfill
+  \subfigure[Resolution $1024 \times 1024$]{
+    \includegraphics[width=0.475\linewidth]{images/noise-1024.png}
+    \label{fig:noise-1024}}
+  \vskip\baselineskip
+  \subfigure[Resolution $256 \times 256$]{
+    \includegraphics[width=0.475\linewidth]{images/noise-256.png}
+    \label{fig:noise-256}}
+  \hfill
+  \subfigure[Resolution $64 \times 64$]{
+    \includegraphics[width=0.475\linewidth]{images/noise-64.png}
+    \label{fig:noise-64}}
+  \caption[]{Example of value noise function sampled with different resolution
+    (\cref{sec:value-noise}).}
   \label{fig:noise}
-\end{figure}
+\end{figure*}
 
 \begin{figure*}[ht]
   \centering

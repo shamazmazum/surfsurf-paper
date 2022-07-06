@@ -25,8 +25,10 @@ end
 
 function produce_noise!()
     fn(x, y, n) = value_noise(15x/n, 15y/n, 0, 3, 43432) < 0.5
-    img1024 = [fn(x, y, 1024) for x in 1:1024, y in 1:1024]
-    save("surfsurf-paper/images/noise.png", Gray.(img1024))
+    for n in [64, 256, 1024, 4096]
+        img = [fn(x, y, n) for x in 1:n, y in 1:n]
+        save("surfsurf-paper/images/noise-$(n).png", img)
+    end
 end
 
 function produce_plots_with_disks!()
@@ -76,12 +78,10 @@ function produce_plots_with_disks!()
 end
 
 function produce_plots_with_noise!()
-    fn(x, y, n) = value_noise(15x/n, 15y/n, 0, 3, 43432) < 0.5
-
-    img64   = [fn(x, y, 64)   for x in 1:64,   y in 1:64]
-    img256  = [fn(x, y, 256)  for x in 1:256,  y in 1:256]
-    img1024 = [fn(x, y, 1024) for x in 1:1024, y in 1:1024]
-    img4096 = [fn(x, y, 4096) for x in 1:4096, y in 1:4096]
+    img64   = load("surfsurf-paper/images/noise-64.png")   .|> Gray |> BitArray
+    img256  = load("surfsurf-paper/images/noise-256.png")  .|> Gray |> BitArray
+    img1024 = load("surfsurf-paper/images/noise-1024.png") .|> Gray |> BitArray
+    img4096 = load("surfsurf-paper/images/noise-4096.png") .|> Gray |> BitArray
 
     ss64   = Directional.surfsurf(img64,   false; periodic = true) |> mean
     ss256  = Directional.surfsurf(img256,  false; periodic = true) |> mean

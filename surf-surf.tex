@@ -19,8 +19,6 @@
 
 \definecolor{light-gray}{gray}{0.95}
 \newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
-% When cleveref fails to do its job
-\newcommand{\apref}[1]{Appendix \ref{#1}}
 
 \begin{document}
 \preprint{APS/123-QED}
@@ -825,10 +823,10 @@ solution and establishing the criterion $C_{0.5}$ we now have enough tools to
 evaluate surface CFs for different porous media images, including real XCT and
 SEM images.
 
-For demonstration purposes, we computed correlation functions for three
-sandstone and three carbonate samples with dimensions
-$500 \times 500 \times 500$ (\cref{fig:real-data}) all of which satisfy our
-$C_{0.5}$ criterion. The result can be seen on \cref{fig:real-data-plots}.
+For demonstration purposes, we computed correlation functions for XCT images of
+three sandstone and three carbonate samples with dimensions
+$500 \times 500 \times 500$ all of which satisfy our $C_{0.5}$ criterion. The
+result can be seen on \cref{fig:real-data-xct}.
 
 There are examples of bad images which do not pass our criterion on
 \cref{fig:real-bad}.
@@ -836,35 +834,29 @@ There are examples of bad images which do not pass our criterion on
 \begin{figure*}[t]
   \centering
   \subfigure[Sandstone 1, $C_{0.5} = 0.938$]{
-    \includegraphics[width=0.3\linewidth]{images/sandstone1.png}
+    \includegraphics[width=0.15\linewidth]{images/sandstone1.png}
     \label{fig:sandstone1}}
   \hfill
   \subfigure[Sandstone 2, $C_{0.5} = 0.937$]{
-    \includegraphics[width=0.3\linewidth]{images/sandstone2.png}
+    \includegraphics[width=0.15\linewidth]{images/sandstone2.png}
     \label{fig:sandstone2}}
   \hfill
   \subfigure[Sandstone 3, $C_{0.5} = 0.939$]{
-    \includegraphics[width=0.3\linewidth]{images/sandstone3.png}
+    \includegraphics[width=0.15\linewidth]{images/sandstone3.png}
     \label{fig:sandstone3}}
-  \vskip\baselineskip
+  \hfill
   \subfigure[Carbonate 1, $C_{0.5} = 0.950$]{
-    \includegraphics[width=0.3\linewidth]{images/carbonate1.png}
+    \includegraphics[width=0.15\linewidth]{images/carbonate1.png}
     \label{fig:carbonate1}}
   \hfill
   \subfigure[Carbonate 2, $C_{0.5} = 0.954$]{
-    \includegraphics[width=0.3\linewidth]{images/carbonate2.png}
+    \includegraphics[width=0.15\linewidth]{images/carbonate2.png}
     \label{fig:carbonate2}}
   \hfill
   \subfigure[Carbonate 3, $C_{0.5} = 0.946$]{
-    \includegraphics[width=0.3\linewidth]{images/carbonate3.png}
+    \includegraphics[width=0.15\linewidth]{images/carbonate3.png}
     \label{fig:carbonate3}}
-  \caption[]{Data used in \cref{sec:application} for calculation of correlation
-    functions.}
-  \label{fig:real-data}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
+  \vskip\baselineskip
   \subfigure[Surface-surface function]{
     \includegraphics[width=0.475\linewidth]{images/KIK-ss.png}
     \label{fig:plot-ss-real}}
@@ -872,23 +864,19 @@ There are examples of bad images which do not pass our criterion on
   \subfigure[Surface-void function]{
     \includegraphics[width=0.475\linewidth]{images/KIK-sv.png}
     \label{fig:plot-sv-real}}
-  \caption[]{Plots of $F_{ss}$ and $F_{sv}$ correlation functions computed for
-    samples on \cref{fig:real-data}.}
-  \label{fig:real-data-plots}
+  \caption[]{Examples of XCT images along with surface correlation functions
+    calculated using our method.}
+  \label{fig:real-data-xct}
 \end{figure*}
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
-  \subfigure[$C_{0.5} = 0.8397$]{
-    \includegraphics[width=0.475\linewidth]{images/sb-bad.png}
-    \label{fig:bad1}}
-  \hfill
-  \subfigure[$C_{0.5} = 0.8517$]{
-    \includegraphics[width=0.475\linewidth]{images/sb-bad2.png}
-    \label{fig:bad2}}
-  \caption[]{Examples of images which do not pass $C_{0.5}$ criterion.}
+  \includegraphics[width=0.475\linewidth]{images/sb-bad.png}
+  \includegraphics[width=0.475\linewidth]{images/sb-bad2.png}
+  \caption[]{Examples of images which do not pass $C_{0.5}$ criterion with
+    $C_{0.5} < 0.9$.}
   \label{fig:real-bad}
-\end{figure*}
+\end{figure}
 
 \section{Discussion and outline}
 \label{sec:outline}

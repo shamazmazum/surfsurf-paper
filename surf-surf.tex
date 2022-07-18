@@ -828,6 +828,10 @@ three sandstone and three carbonate samples with dimensions
 $500 \times 500 \times 500$ all of which satisfy our $C_{0.5}$ criterion. The
 result can be seen on \cref{fig:real-data-xct}.
 
+Also we computed correlation functions for SEM images of two sandstones
+(with dimensions $1024 \times 691$) and two carbonates ($1280 \times 869$). The
+result is on \cref{fig:real-data-sem}.
+
 There are examples of bad images which do not pass our criterion on
 \cref{fig:real-bad}.
 
@@ -858,15 +862,45 @@ There are examples of bad images which do not pass our criterion on
     \label{fig:carbonate3}}
   \vskip\baselineskip
   \subfigure[Surface-surface function]{
-    \includegraphics[width=0.475\linewidth]{images/KIK-ss.png}
+    \includegraphics[width=0.475\linewidth]{images/XCT-ss.png}
     \label{fig:plot-ss-real}}
   \hfill
   \subfigure[Surface-void function]{
-    \includegraphics[width=0.475\linewidth]{images/KIK-sv.png}
+    \includegraphics[width=0.475\linewidth]{images/XCT-sv.png}
     \label{fig:plot-sv-real}}
   \caption[]{Examples of XCT images along with surface correlation functions
     calculated using our method.}
   \label{fig:real-data-xct}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \subfigure[Sandstone 4, $C_{0.5} = 0.$]{
+    \includegraphics[width=0.2\linewidth]{images/846-79_0009.png}
+    \label{fig:sandstone4}}
+  \hfill
+  \subfigure[Sandstone 5, $C_{0.5} = 0.$]{
+    \includegraphics[width=0.2\linewidth]{images/859-12_0005.png}
+    \label{fig:sandstone5}}
+  \hfill
+  \subfigure[Carbonate 4, $C_{0.5} = 0.$]{
+    \includegraphics[width=0.2\linewidth]{images/C1-1-g6_010.png}
+    \label{fig:carbonate4}}
+  \hfill
+  \subfigure[Carbonate 5, $C_{0.5} = 0.$]{
+    \includegraphics[width=0.2\linewidth]{images/C3-3-G0 (32).png}
+    \label{fig:carbonate5}}
+  \vskip\baselineskip
+  \subfigure[Surface-surface function]{
+    \includegraphics[width=0.475\linewidth]{images/SEM-ss.png}
+    \label{fig:plot-ss-real-sem}}
+  \hfill
+  \subfigure[Surface-void function]{
+    \includegraphics[width=0.475\linewidth]{images/SEM-sv.png}
+    \label{fig:plot-sv-real-sem}}
+  \caption[]{Examples of SEM images along with surface correlation functions
+    calculated using our method.}
+  \label{fig:real-data-sem}
 \end{figure*}
 
 \begin{figure}[t]
